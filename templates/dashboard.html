@@ -1,0 +1,28 @@
+<!-- templates/dashboard.html -->
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Hello, {{ session['user'] }}!</h2>
+<p>Fill the form to get career guidance:</p>
+
+{% if message %}
+    <p style="color: green;">{{ message }}</p>
+{% endif %}
+
+<form method="POST">
+    <label>Interest Area:</label><br>
+    <input type="text" name="interest" required><br><br>
+
+    <label>Your Skills:</label><br>
+    <input type="text" name="skills" required><br><br>
+
+    <label>Preferred Job Role:</label><br>
+    <input type="text" name="role" required><br><br>
+
+    <label>Career Goal:</label><br>
+    <input type="text" name="goal" required><br><br>
+
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

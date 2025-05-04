@@ -1,0 +1,14 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home | MyCareerMate{% endblock %}
+
+{% block content %}
+<h1>Welcome to MyCareerMate</h1>
+<p>Your AI-Powered Career Companion</p>
+{% if session.get('user') %}
+    <p>Welcome, {{ session['user'] }}!</p>
+{% else %}
+    <p>Please login or register to continue.</p>
+{% endif %}
+{% endblock %}

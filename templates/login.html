@@ -1,0 +1,14 @@
+<!-- templates/login.html -->
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h2>Login</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.email.label }} {{ form.email(size=32) }}<br><br>
+    {{ form.password.label }} {{ form.password(size=32) }}<br><br>
+    {{ form.submit() }}
+</form>
+{% endblock %}
