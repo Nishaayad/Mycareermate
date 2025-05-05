@@ -1,14 +1,29 @@
-<!-- templates/login.html -->
 {% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login | MyCareerMate{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    {{ form.email.label }} {{ form.email(size=32) }}<br><br>
-    {{ form.password.label }} {{ form.password(size=32) }}<br><br>
-    {{ form.submit() }}
-</form>
+<section class="login-container">
+    <div class="login-box">
+        <h2>Login to <span class="highlight">MyCareerMate</span></h2>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                {{ form.email(class="input-field") }}
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                {{ form.password(class="input-field") }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="submit-btn") }}
+            </div>
+            <div class="form-footer">
+                <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+                <p><a href="#">Forgot Password?</a></p>
+            </div>
+        </form>
+    </div>
+</section>
 {% endblock %}

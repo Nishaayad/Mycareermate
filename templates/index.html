@@ -4,11 +4,72 @@
 {% block title %}Home | MyCareerMate{% endblock %}
 
 {% block content %}
-<h1>Welcome to MyCareerMate</h1>
-<p>Your AI-Powered Career Companion</p>
-{% if session.get('user') %}
-    <p>Welcome, {{ session['user'] }}!</p>
-{% else %}
-    <p>Please login or register to continue.</p>
-{% endif %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #4e54c8, #8f94fb);
+        color: white;
+        padding: 60px 20px;
+        text-align: center;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        line-height: 1.6;
+    }
+
+    .cta {
+        margin-top: 30px;
+    }
+
+    .cta a {
+        text-decoration: none;
+        background-color: #ffffff;
+        color: #4e54c8;
+        padding: 12px 25px;
+        border-radius: 30px;
+        font-weight: bold;
+        transition: 0.3s ease;
+    }
+
+    .cta a:hover {
+        background-color: #e0e0ff;
+    }
+
+    .welcome {
+        margin-top: 30px;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #333;
+        text-align: center;
+    }
+</style>
+
+<div class="hero">
+    <h1>Welcome to MyCareerMate</h1>
+    <p>Your <strong>AI-Powered Career Companion</strong> ✨</p>
+    <p>
+        Navigating the professional world as a student or fresher can be overwhelming,
+        but you don’t have to do it alone.<br>
+        MyCareerMate is here to guide you with personalized career advice, resume help,
+        interview prep, and more — all powered by smart AI tools. 💼🚀
+    </p>
+
+    <div class="cta">
+        {% if session.get('user') %}
+            <p class="welcome">Welcome, {{ session['user'] }}! 🎉</p>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            &nbsp; or &nbsp;
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
