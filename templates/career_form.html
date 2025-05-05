@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Submit Your Career Info</h2>
+<form method="POST" action="/submit">
+    <label>Name:</label><br>
+    <input type="text" name="name" required><br>
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br>
+    <label>Career Goal:</label><br>
+    <textarea name="goal" required></textarea><br>
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
