@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}AI Career Suggestion{% endblock %}
+
+{% block content %}
+<h2>Get AI Career Suggestions</h2>
+
+<form method="POST">
+    <label>Interest</label><br>
+    <input type="text" name="interest"><br><br>
+
+    <label>Skills</label><br>
+    <input type="text" name="skills"><br><br>
+
+    <label>Goal</label><br>
+    <input type="text" name="goal"><br><br>
+
+    <input type="submit" value="Get Suggestion">
+</form>
+
+{% if suggestion %}
+    <h3>Suggested Careers:</h3>
+    <ul>
+        {% for line in suggestion.split('\n') %}
+            {% if line.strip() %}
+                <li>{{ line }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

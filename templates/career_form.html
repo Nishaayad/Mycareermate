@@ -1,14 +1,20 @@
+<!-- templates/career_form.html -->
 {% extends 'base.html' %}
 
+{% block title %}Career Info Form{% endblock %}
+
 {% block content %}
-<h2>Submit Your Career Info</h2>
-<form method="POST" action="/submit">
+<h2>Career Info</h2>
+<form method="POST">
     <label>Name:</label><br>
-    <input type="text" name="name" required><br>
+    <input type="text" name="name" required><br><br>
+
     <label>Email:</label><br>
-    <input type="email" name="email" required><br>
+    <input type="email" name="email" required><br><br>
+
     <label>Career Goal:</label><br>
-    <textarea name="goal" required></textarea><br>
-    <button type="submit">Submit</button>
+    <textarea name="career_goal" required></textarea><br><br>
+
+    <input type="submit" value="Submit">
 </form>
 {% endblock %}

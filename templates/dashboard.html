@@ -1,28 +1,24 @@
-<!-- templates/dashboard.html -->
-{% extends 'base.html' %}
-{% block title %}Dashboard{% endblock %}
+<div class="profile-summary">
+    <img src="{{ url_for('static', filename='profile_pics/' ~ user_pic) }}" width="100">
+    <p>Welcome, {{ session['user'] }}</p>
+    <a href="{{ url_for('profile') }}">View Full Profile</a>
+    <a href="{{ url_for('update_profile') }}">Edit Profile</a>
+    <a href="{{ url_for('career_suggestion') }}">Get Career Suggestions</a>
 
-{% block content %}
-<h2>Hello, {{ session['user'] }}!</h2>
-<p>Fill the form to get career guidance:</p>
+</div>
 
+<!-- Show message if any -->
 {% if message %}
     <p style="color: green;">{{ message }}</p>
 {% endif %}
 
-<form method="POST">
-    <label>Interest Area:</label><br>
-    <input type="text" name="interest" required><br><br>
-
-    <label>Your Skills:</label><br>
-    <input type="text" name="skills" required><br><br>
-
-    <label>Preferred Job Role:</label><br>
-    <input type="text" name="role" required><br><br>
-
-    <label>Career Goal:</label><br>
-    <input type="text" name="goal" required><br><br>
-
-    <button type="submit">Save</button>
-</form>
-{% endblock %}
+<!-- Show submitted career data -->
+<h3>Your Career Entries:</h3>
+<ul>
+    {% for entry in career_entries %}
+        <li><strong>Interest:</strong> {{ entry[0] }},
+            <strong>Skills:</strong> {{ entry[1] }},
+            <strong>Goal:</strong> {{ entry[2] }},
+            <strong>Role:</strong> {{ entry[3] }}</li>
+    {% endfor %}
+</ul>
