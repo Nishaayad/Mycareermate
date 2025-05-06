@@ -1,35 +1,49 @@
-from flask import Flask, render_template, redirect, url_for, session, request
+from flask import Flask, render_template, redirect, url_for, session, request, flash
 from flask_mysqldb import MySQL
 from forms import RegisterForm, LoginForm
 from email_validator import validate_email
-from flask import flash
 import os
 from werkzeug.utils import secure_filename
 import openai
-
-openai.api_key = 'YOUR_OPENAI_API_KEY'
+from openai import OpenAI
 
 app = Flask(__name__)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 app.secret_key = 'nisha_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max file size
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# MySQL Configuration
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'Nishasql21@.'
 app.config['MYSQL_DB'] = 'nisha'
-
 mysql = MySQL(app)
 
-# ✅ Home Route
-@app.route('/')
+# ✅ HOME with OpenAI Suggestion
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template('index.html')
+    suggestion = ""
+    if request.method == "POST":
+        user_prompt = request.form["prompt"]
 
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+        suggestion = response.choices[0].message.content
+
+    return render_template("index.html", suggestion=suggestion)
+
+# ✅ Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -42,9 +56,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-
-# ✅ Login Route
-
+# ✅ Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -62,6 +74,7 @@ def login():
             flash("Invalid email or password ❌", "danger")
     return render_template('login.html', form=form)
 
+# ✅ Dashboard
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'user' not in session:
@@ -82,37 +95,35 @@ def dashboard():
         cur.close()
         message = "Saved successfully!"
 
-    # ✅ Fetch user profile pic
     cur = mysql.connection.cursor()
     cur.execute("SELECT profile_pic FROM users WHERE username=%s", (session['user'],))
     user_pic = cur.fetchone()[0] or 'default.png'
 
-    # ✅ Fetch user-specific career data
     cur.execute("SELECT interest, skills, goal, role FROM career_data WHERE username = %s", (session['user'],))
     career_entries = cur.fetchall()
     cur.close()
 
     return render_template('dashboard.html', message=message, user_pic=user_pic, career_entries=career_entries)
 
-
+# ✅ Profile Page
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if 'user' not in session:
         return redirect(url_for('login'))
 
     cur = mysql.connection.cursor()
-
     if request.method == 'POST':
         new_email = request.form['email']
         cur.execute("UPDATE users SET email = %s WHERE username = %s", (new_email, session['user']))
         mysql.connection.commit()
 
-    # Fetch updated user info
     cur.execute("SELECT username, email FROM users WHERE username = %s", (session['user'],))
     user_data = cur.fetchone()
     cur.close()
 
     return render_template('profile.html', user=user_data)
+
+# ✅ Career Suggestion AI Page
 @app.route('/career_suggestion', methods=['GET', 'POST'])
 def career_suggestion():
     if 'user' not in session:
@@ -124,14 +135,7 @@ def career_suggestion():
         interest = request.form['interest']
         skills = request.form['skills']
         goal = request.form['goal']
-        # after AI generates suggestion
-        cur = mysql.connection.cursor()
-        cur.execute("""
-                    INSERT INTO career_suggestions (username, interest, skills, goal, suggestion)
-                    VALUES (%s, %s, %s, %s, %s)
-                    """, (session['user'], interest, skills, goal, suggestion))
-        mysql.connection.commit()
-        cur.close()
+
         prompt = f"""
         A student has the following:
         - Interests: {interest}
@@ -146,12 +150,19 @@ def career_suggestion():
             max_tokens=300,
             temperature=0.7
         )
-
         suggestion = response.choices[0].text.strip()
-        
+
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO career_suggestions (username, interest, skills, goal, suggestion)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (session['user'], interest, skills, goal, suggestion))
+        mysql.connection.commit()
+        cur.close()
 
     return render_template('career_suggestion.html', suggestion=suggestion)
 
+# ✅ Update Profile
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update_profile():
     if 'user' not in session:
@@ -167,10 +178,10 @@ def update_profile():
         cur.execute("UPDATE users SET username=%s, email=%s, password=%s WHERE username=%s",
                     (username, email, password, session['user']))
         mysql.connection.commit()
-        session['user'] = username  # Update session
+        session['user'] = username
         message = "Profile updated successfully!"
         cur.close()
-        return render_template('update_profile.html', message=message, user=session['user'], email=email, password=password)
+        return render_template('update_profile.html', message=message, user=username, email=email, password=password)
 
     cur.execute("SELECT username, email, password FROM users WHERE username=%s", (session['user'],))
     user_data = cur.fetchone()
@@ -178,6 +189,7 @@ def update_profile():
 
     return render_template('update_profile.html', user=user_data[0], email=user_data[1], password=user_data[2])
 
+# ✅ Change Password
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
     if 'user' not in session:
@@ -205,6 +217,7 @@ def change_password():
 
     return render_template('change_password.html', message=message)
 
+# ✅ Upload Picture
 @app.route('/upload_picture', methods=['GET', 'POST'])
 def upload_picture():
     if 'user' not in session:
@@ -218,7 +231,6 @@ def upload_picture():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
-            # Save filename in DB
             cur = mysql.connection.cursor()
             cur.execute("UPDATE users SET profile_pic=%s WHERE username=%s", (filename, session['user']))
             mysql.connection.commit()
@@ -229,8 +241,7 @@ def upload_picture():
     
     return render_template('upload_picture.html', message=message)
 
-
-# ✅ Career Form Page
+# ✅ Career Form
 @app.route('/career_form', methods=['GET', 'POST'])
 def career_form():
     if request.method == 'POST':
@@ -246,7 +257,7 @@ def career_form():
         return render_template('success.html')  
     return render_template('career_form.html')
 
-# ✅ Data Preview Route (for admin/testing)
+# ✅ Show All Data (Admin)
 @app.route('/data')
 def show_data():
     cur = mysql.connection.cursor()
@@ -259,7 +270,8 @@ def show_data():
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
+# ✅ Run the App
 if __name__ == '__main__':
     app.run(debug=True)

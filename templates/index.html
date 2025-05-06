@@ -47,8 +47,55 @@
         margin-top: 30px;
         font-size: 1.2rem;
         font-weight: 500;
-        color: #333;
+        color: #f0f0f0;
         text-align: center;
+    }
+
+    .ai-form {
+        margin-top: 40px;
+    }
+
+    .ai-form input[type="text"] {
+        padding: 12px;
+        width: 60%;
+        border: none;
+        border-radius: 25px;
+        margin-right: 10px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .ai-form button {
+        padding: 12px 20px;
+        border: none;
+        background-color: #ffffff;
+        color: #4e54c8;
+        font-weight: bold;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .ai-form button:hover {
+        background-color: #e0e0ff;
+    }
+
+    .response-section {
+        margin-top: 30px;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: left;
+    }
+
+    .response-section h3 {
+        margin-bottom: 10px;
+    }
+
+    .response-section p {
+        font-size: 1rem;
+        color: #f1f1f1;
+        line-height: 1.6;
     }
 </style>
 
@@ -72,5 +119,19 @@
         {% endif %}
         <a href="{{ url_for('career_form') }}">Career Form</a>
     </div>
+
+    <div class="ai-form">
+        <form method="post">
+            <input type="text" name="prompt" placeholder="Ask our AI assistant anything..." required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    {% if suggestion %}
+    <div class="response-section">
+        <h3>AI Response:</h3>
+        <p>{{ suggestion }}</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
