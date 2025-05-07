@@ -82,7 +82,7 @@ nav a {
 
 .input-field:focus {
     outline: none;
-    border-color: #4e54c8;
+    border-color: #49c8f6;
 }
 
 /* Submit Button */
@@ -111,7 +111,7 @@ nav a {
 }
 
 .form-footer a {
-    color: #4e54c8;
+    color: #6cd7b9;
     text-decoration: none;
     font-weight: bold;
 }

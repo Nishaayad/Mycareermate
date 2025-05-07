@@ -14,7 +14,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app.secret_key = 'nisha_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
