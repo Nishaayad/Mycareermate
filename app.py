@@ -6,6 +6,8 @@ import os
 from werkzeug.utils import secure_filename
 import openai
 from openai import OpenAI
+from dotenv import load_dotenv
+load_dotenv() 
 
 app = Flask(__name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
