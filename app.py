@@ -27,13 +27,12 @@ app.config['MYSQL_PASSWORD'] = 'Nishasql21@.'
 app.config['MYSQL_DB'] = 'nisha'
 mysql = MySQL(app)
 
-# ✅ HOME with OpenAI Suggestion
 @app.route("/", methods=["GET", "POST"])
 def index():
     suggestion = ""
     if request.method == "POST":
         user_prompt = request.form["prompt"]
-
+        client = OpenAI()
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -42,7 +41,6 @@ def index():
             ]
         )
         suggestion = response.choices[0].message.content
-
     return render_template("index.html", suggestion=suggestion)
 
 # ✅ Register
@@ -139,13 +137,13 @@ def career_suggestion():
         goal = request.form['goal']
 
         prompt = f"""
-        A student has the following:
-        - Interests: {interest}
-        - Skills: {skills}
-        - Career Goal: {goal}
+    A student has the following:
+    - Interests: {interest}
+    - Skills: {skills}
+    - Career Goal: {goal}
         
-        Suggest 3 suitable career paths with a short explanation for each.
-        """
+    Suggest 3 suitable career paths with a short explanation for each.
+    """
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
