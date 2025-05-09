@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+        .chat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e6f7ff;
+            border-left: 5px solid #00bfff;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <h2>Ask AI</h2>
+        <form method="POST">
+            <input type="text" name="chat_input" placeholder="Enter your message..." required>
+            <input type="submit" value="Send">
+        </form>
+        {% if response %}
+        <div class="response">
+            <strong>AI:</strong> {{ response }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

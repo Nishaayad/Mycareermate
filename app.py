@@ -4,21 +4,26 @@ from forms import RegisterForm, LoginForm
 from email_validator import validate_email
 import os
 from werkzeug.utils import secure_filename
-import openai
-from openai import OpenAI
 from dotenv import load_dotenv
-load_dotenv() 
+from huggingface_hub import InferenceClient
+from ai_engine import generate_response
+
+
+load_dotenv()
 
 app = Flask(__name__)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 app.secret_key = 'nisha_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# Hugging Face Client
+hf_token = os.getenv("HUGGINGFACE_API_TOKEN")
+client = InferenceClient(
+    model="mistralai/Mistral-7B-Instruct-v0.1",
+    token=hf_token,
+    provider="auto"  
+)
 
 # MySQL Configuration
 app.config['MYSQL_HOST'] = 'localhost'
@@ -27,23 +32,31 @@ app.config['MYSQL_PASSWORD'] = 'Nishasql21@.'
 app.config['MYSQL_DB'] = 'nisha'
 mysql = MySQL(app)
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     suggestion = ""
     if request.method == "POST":
         user_prompt = request.form["prompt"]
-        client = OpenAI()
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_prompt}
-            ]
+        response = client.text_generation(
+            prompt=f"You are a helpful assistant.\nUser: {user_prompt}\nAssistant:",
+            max_new_tokens=200
         )
-        suggestion = response.choices[0].message.content
+        suggestion = response
     return render_template("index.html", suggestion=suggestion)
 
-# ✅ Register
+@app.route("/chat", methods=["GET", "POST"])
+def chat():
+    response = None
+    if request.method == "POST":
+        user_input = request.form.get("chat_input")
+        if user_input:
+            response = generate_response(user_input)  # from ai_engine
+    return render_template("chat.html", response=response)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -56,7 +69,6 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-# ✅ Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -74,7 +86,6 @@ def login():
             flash("Invalid email or password ❌", "danger")
     return render_template('login.html', form=form)
 
-# ✅ Dashboard
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'user' not in session:
@@ -105,7 +116,6 @@ def dashboard():
 
     return render_template('dashboard.html', message=message, user_pic=user_pic, career_entries=career_entries)
 
-# ✅ Profile Page
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if 'user' not in session:
@@ -123,7 +133,6 @@ def profile():
 
     return render_template('profile.html', user=user_data)
 
-# ✅ Career Suggestion AI Page
 @app.route('/career_suggestion', methods=['GET', 'POST'])
 def career_suggestion():
     if 'user' not in session:
@@ -137,21 +146,17 @@ def career_suggestion():
         goal = request.form['goal']
 
         prompt = f"""
-    A student has the following:
-    - Interests: {interest}
-    - Skills: {skills}
-    - Career Goal: {goal}
-        
-    Suggest 3 suitable career paths with a short explanation for each.
-    """
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=300,
-            temperature=0.7
-        )
-        suggestion = response.choices[0].text.strip()
+A student has the following:
+- Interests: {interest}
+- Skills: {skills}
+- Career Goal: {goal}
 
+Suggest 3 suitable career paths with a short explanation for each.
+"""
+        # ✅ Use helper function from ai_engine.py
+        suggestion = generate_response(prompt)
+
+        # ✅ Store in MySQL
         cur = mysql.connection.cursor()
         cur.execute("""
             INSERT INTO career_suggestions (username, interest, skills, goal, suggestion)
@@ -162,7 +167,6 @@ def career_suggestion():
 
     return render_template('career_suggestion.html', suggestion=suggestion)
 
-# ✅ Update Profile
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update_profile():
     if 'user' not in session:
@@ -189,7 +193,6 @@ def update_profile():
 
     return render_template('update_profile.html', user=user_data[0], email=user_data[1], password=user_data[2])
 
-# ✅ Change Password
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
     if 'user' not in session:
@@ -217,7 +220,6 @@ def change_password():
 
     return render_template('change_password.html', message=message)
 
-# ✅ Upload Picture
 @app.route('/upload_picture', methods=['GET', 'POST'])
 def upload_picture():
     if 'user' not in session:
@@ -238,10 +240,9 @@ def upload_picture():
             message = "Profile picture updated!"
         else:
             message = "Invalid file type. Please upload PNG, JPG, or JPEG."
-    
+
     return render_template('upload_picture.html', message=message)
 
-# ✅ Career Form
 @app.route('/career_form', methods=['GET', 'POST'])
 def career_form():
     if request.method == 'POST':
@@ -254,10 +255,9 @@ def career_form():
                     (name, email, career_goal))
         mysql.connection.commit()
         cur.close()
-        return render_template('success.html')  
+        return render_template('success.html')
     return render_template('career_form.html')
 
-# ✅ Show All Data (Admin)
 @app.route('/data')
 def show_data():
     cur = mysql.connection.cursor()
@@ -266,12 +266,10 @@ def show_data():
     cur.close()
     return render_template('show_data.html', data=data)
 
-# ✅ Logout
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return redirect(url_for('home'))
+    return redirect(url_for('index'))
 
-# ✅ Run the App
 if __name__ == '__main__':
     app.run(debug=True)
