@@ -41,7 +41,7 @@ def index():
     suggestion = ""
     if request.method == "POST":
         user_prompt = request.form["prompt"]
-        suggestion = carrermate_aibot(user_prompt)  # Use NVIDIA's bot here
+        suggestion = carrermate_aibot(user_prompt)  
     return render_template("index.html", suggestion=suggestion)
 
 
