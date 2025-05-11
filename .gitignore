@@ -9,3 +9,4 @@ instance/
 *.db
 venv/
 .env.*
+ai_engine.py
