@@ -5,12 +5,25 @@ from email_validator import validate_email
 import os
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from flask import Flask, render_template, request
-from bot import carrermate_aibot 
+from huggingface_hub import InferenceClient
+from ai_engine import generate_response
+
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = 'nisha_secret_key'
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+# Hugging Face Client
+hf_token = os.getenv("HUGGINGFACE_API_TOKEN")
+client = InferenceClient(
+    model="mistralai/Mistral-7B-Instruct-v0.1",
+    token=hf_token,
+    provider="auto"  
+)
 
 # MySQL Configuration
 app.config['MYSQL_HOST'] = 'localhost'
@@ -20,32 +33,29 @@ app.config['MYSQL_DB'] = 'nisha'
 mysql = MySQL(app)
 
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/chat', methods=['POST'])
-def chat():
-    # Get the user query from the form
-    user_query = request.form['user_input']
-    # Call the chatbot function to get the response
-    bot_response = carrermate_aibot(user_query)
-    # Render the chatbot page with the query and bot response
-    return render_template('chatbot.html', user_input=user_query, bot_response=bot_response)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     suggestion = ""
     if request.method == "POST":
         user_prompt = request.form["prompt"]
-        suggestion = carrermate_aibot(user_prompt)  # Use NVIDIA's bot here
+        response = client.text_generation(
+            prompt=f"You are a helpful assistant.\nUser: {user_prompt}\nAssistant:",
+            max_new_tokens=200
+        )
+        suggestion = response
     return render_template("index.html", suggestion=suggestion)
 
+@app.route("/chat", methods=["GET", "POST"])
+def chat():
+    response = None
+    if request.method == "POST":
+        user_input = request.form.get("chat_input")
+        if user_input:
+            response = generate_response(user_input)  # from ai_engine
+    return render_template("chat.html", response=response)
 
-# Other routes (unchanged from your provided code)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -136,14 +146,15 @@ def career_suggestion():
         goal = request.form['goal']
 
         prompt = f"""
-        A student has the following:
-        - Interests: {interest}
-        - Skills: {skills}
-        - Career Goal: {goal}
+A student has the following:
+- Interests: {interest}
+- Skills: {skills}
+- Career Goal: {goal}
 
-        Suggest 3 suitable career paths with a short explanation for each.
-        """
-        suggestion = carrermate_aibot(prompt)  # Use NVIDIA's bot here
+Suggest 3 suitable career paths with a short explanation for each.
+"""
+        # ✅ Use helper function from ai_engine.py
+        suggestion = generate_response(prompt)
 
         # ✅ Store in MySQL
         cur = mysql.connection.cursor()
@@ -155,7 +166,6 @@ def career_suggestion():
         cur.close()
 
     return render_template('career_suggestion.html', suggestion=suggestion)
-
 
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update_profile():

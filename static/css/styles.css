@@ -1,52 +1,121 @@
+/* Static/style.css */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #ece9e6, #ffffff);
-  margin: 0;
-  padding: 0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: #f5f5f5;
 }
 
+/* Navigation */
 nav {
-  background-color: #0077b6;
-  padding: 1rem;
-  text-align: center;
+    background: #0077cc;
+    padding: 10px;
+    text-align: center;
 }
 
-nav ul {
-  list-style: none;
-  display: inline-flex;
-  gap: 2rem;
-  margin: 0;
-  padding: 0;
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
 }
 
-nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-nav ul li a:hover {
-  text-decoration: underline;
-}
-
+/* Container */
 .container {
-  max-width: 800px;
-  margin: 2rem auto;
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
 }
 
-button {
-  background-color: #00b4d8;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+/* Attractive Background with Gradient */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(78, 84, 200, 0.8), rgba(143, 148, 251, 0.8)), url('https://your-background-image-url.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
 }
 
-button:hover {
-  background-color: #0077b6;
+/* Login Box Styling */
+.login-box {
+    background: rgba(255, 255, 255, 0.9);  /* Light transparent white background */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);  /* Soft shadow for the box */
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Heading */
+.login-box h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.login-box .highlight {
+    color: #ffd369;
+}
+
+/* Form Structure */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: transparent;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #49c8f6;
+}
+
+/* Submit Button */
+.submit-btn {
+    background-color: #ffd369;
+    color: #222;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1rem;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #f7c948;
+    transform: scale(1.05);
+}
+
+/* Footer Links */
+.form-footer {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.form-footer a {
+    color: #6cd7b9;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
 }
