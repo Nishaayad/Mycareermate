@@ -1,26 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareerMate AI Bot</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">  <!-- Link to your CSS -->
-</head>
-<body>
-    <div class="container">
-        <h2>Welcome to CareerMate AI Bot</h2>
-        <form action="{{ url_for('chat') }}" method="POST">
-            <label for="user_input">Ask me about career advice:</label>
-            <input type="text" id="user_input" name="user_input" required>
-            <button type="submit">Ask</button>
-        </form>
+{% extends "base.html" %}
 
-        {% if user_input %}
-        <div class="chat-box">
-            <p><strong>User:</strong> {{ user_input }}</p>
-            <p><strong>Chatbot:</strong> {{ bot_response }}</p>
+{% block title %}AI Chatbot - MyCareerMate{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🎓 Talk to CareerMate AI</h2>
+
+    <form method="POST" action="/chat">
+        <div class="form-group">
+            <label for="user_input">Ask your question:</label>
+            <input type="text" class="form-control" id="user_input" name="user_input" required>
         </div>
-        {% endif %}
+        <button type="submit" class="btn btn-primary mt-2">Ask AI</button>
+    </form>
+
+    {% if user_input %}
+    <div class="mt-4">
+        <h5><strong>You:</strong> {{ user_input }}</h5>
+        <h5><strong>CareerMate AI:</strong> {{ bot_response }}</h5>
     </div>
-</body>
-</html>
+    {% endif %}
+</div>
+{% endblock %}
