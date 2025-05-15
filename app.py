@@ -68,8 +68,9 @@ def register():
             return redirect(url_for('register'))
 
         profile_pic = 'boy.png' if gender == 'boy' else 'woman.png'
+        hashed_password = generate_password_hash(password)
         cur.execute("INSERT INTO users (name, email, password, gender, profile_pic) VALUES (%s, %s, %s, %s, %s)",
-                    (name, email, password, gender, profile_pic))
+            (name, email, hashed_password, gender, profile_pic))
         mysql.connection.commit()
         cur.close()
 
@@ -95,7 +96,6 @@ def login():
         if user:
             stored_password_hash = user[3] 
             if check_password_hash(stored_password_hash, password):
-                session['user_id'] = user[0]
                 session['user'] = user[1] 
                 flash('Login successful!', 'success')
                 return redirect('/dashboard')
@@ -161,7 +161,7 @@ def dashboard():
         cur.close()
         message = "Saved successfully!"
     cur = mysql.connection.cursor()
-    cur.execute("SELECT profile_pic, gender FROM users WHERE username=%s", (session['user'],))
+    cur.execute("SELECT profile_pic, gender FROM users WHERE email=%s", (session['user'],))
     result = cur.fetchone()
 
     if result:
@@ -275,13 +275,13 @@ def change_password():
         cur = mysql.connection.cursor()
         cur.execute("SELECT password FROM users WHERE username = %s", (session['user'],))
         current_db_password = cur.fetchone()[0]
-
-        if current != current_db_password:
+        if not check_password_hash(current_db_password, current):
             message = "Current password is incorrect"
         elif new != confirm:
             message = "New passwords do not match"
         else:
-            cur.execute("UPDATE users SET password = %s WHERE username = %s", (new, session['user']))
+            new_hashed = generate_password_hash(new)
+            cur.execute("UPDATE users SET password = %s WHERE username = %s", (new_hashed, session['user']))
             mysql.connection.commit()
             message = "Password changed successfully!"
         cur.close()
