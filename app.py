@@ -1,18 +1,19 @@
 from flask import Flask, render_template, redirect, url_for, session, request, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mysqldb import MySQL
 from forms import RegisterForm, LoginForm
 from email_validator import validate_email
-import os
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from flask import Flask, render_template, request
 from bot import carrermate_aibot 
+from functools import wraps
+import os
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY') 
 
-# MySQL Configuration
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'Nishasql21@.'
@@ -43,38 +44,102 @@ def index():
         user_prompt = request.form["prompt"]
         suggestion = carrermate_aibot(user_prompt)  
     return render_template("index.html", suggestion=suggestion)
-
-
-# Other routes (unchanged from your provided code)
+from forms import RegisterForm
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
+        name = request.form['fullname']
+        email = request.form['email']
+        gender = request.form['gender']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            flash("Passwords don't match!", "error")
+            return redirect(url_for('register'))
+
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)", 
-                    (form.username.data, form.email.data, form.password.data))
+        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
+        existing_user = cur.fetchone()
+
+        if existing_user:
+            flash("Email already exists!", "error")
+            return redirect(url_for('register'))
+
+        profile_pic = 'boy.png' if gender == 'boy' else 'woman.png'
+        cur.execute("INSERT INTO users (name, email, password, gender, profile_pic) VALUES (%s, %s, %s, %s, %s)",
+                    (name, email, password, gender, profile_pic))
         mysql.connection.commit()
         cur.close()
+
+        flash("Registered successfully! Please log in.", "success")
         return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+
+    return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
+    form = LoginForm()  # WTForm ka object banaya
+
+    if form.validate_on_submit():  # agar form submit hua & valid hai
+        email = form.email.data
+        password = form.password.data
+        
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE email=%s AND password=%s", 
-                    (form.email.data, form.password.data))
+        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
         user = cur.fetchone()
         cur.close()
+        
         if user:
-            session['user'] = user[1]
-            flash("Login Successful! 👏", "success")
-            return redirect(url_for('dashboard'))
+            stored_password_hash = user[3] 
+            if check_password_hash(stored_password_hash, password):
+                session['user_id'] = user[0]
+                session['user'] = user[1] 
+                flash('Login successful!', 'success')
+                return redirect('/dashboard')
+            else:
+                flash('Incorrect password', 'error')
         else:
-            flash("Invalid email or password ❌", "danger")
-    return render_template('login.html', form=form)
+            flash('Email not registered', 'error')
+
+    return render_template('login.html', form=form)  
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        name = request.form['name']           
+        email = request.form['email']         
+        password = request.form['password']     
+        
+        hashed_password = generate_password_hash(password)  
+        cur = mysql.connection.cursor()       
+        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
+        existing_user = cur.fetchone()
+        
+        if existing_user:
+            flash('Email already registered, please login', 'error')
+            cur.close()
+            return redirect('/signup')
+
+        cur.execute("INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
+                    (name, email, hashed_password))
+        mysql.connection.commit()  
+        cur.close()               
+        
+        flash('Signup successful! Please login.', 'success')
+        return redirect('/login')
+    return render_template('signup.html')
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:   
+            flash('Please login first', 'error')
+            return redirect(url_for('login'))    
+        return f(*args, **kwargs)  
+    return decorated_function
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
@@ -95,16 +160,30 @@ def dashboard():
         mysql.connection.commit()
         cur.close()
         message = "Saved successfully!"
-
     cur = mysql.connection.cursor()
-    cur.execute("SELECT profile_pic FROM users WHERE username=%s", (session['user'],))
-    user_pic = cur.fetchone()[0] or 'default.png'
+    cur.execute("SELECT profile_pic, gender FROM users WHERE username=%s", (session['user'],))
+    result = cur.fetchone()
 
+    if result:
+        profile_pic, gender = result
+
+        if profile_pic:
+            user_pic = profile_pic   
+        else:
+            if gender == 'boy':
+                user_pic = 'boy.png'
+            elif gender == 'girl':
+                user_pic = 'woman.png'
+            else:
+                user_pic = 'default.png'
+    else:
+        user_pic = 'default.png'  
     cur.execute("SELECT interest, skills, goal, role FROM career_data WHERE username = %s", (session['user'],))
     career_entries = cur.fetchall()
     cur.close()
 
     return render_template('dashboard.html', message=message, user_pic=user_pic, career_entries=career_entries)
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -143,9 +222,8 @@ def career_suggestion():
 
         Suggest 3 suitable career paths with a short explanation for each.
         """
-        suggestion = carrermate_aibot(prompt)  # Use NVIDIA's bot here
+        suggestion = carrermate_aibot(prompt)  
 
-        # ✅ Store in MySQL
         cur = mysql.connection.cursor()
         cur.execute("""
             INSERT INTO career_suggestions (username, interest, skills, goal, suggestion)
@@ -210,6 +288,17 @@ def change_password():
 
     return render_template('change_password.html', message=message)
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        # you can add logic here later
+        flash("Password reset link sent (dummy).", "success")
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html')
+
+
 @app.route('/upload_picture', methods=['GET', 'POST'])
 def upload_picture():
     if 'user' not in session:
@@ -258,8 +347,9 @@ def show_data():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    return redirect(url_for('index'))
+    session.pop('user_id', None)  
+    flash('You have been logged out.', 'success')
+    return redirect('/login')    
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,16 +1,32 @@
-<!-- templates/register.html -->
-{% extends 'base.html' %}
-
-{% block title %}Register{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-<h2>Register</h2>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    {{ form.username.label }} {{ form.username(size=32) }}<br><br>
-    {{ form.email.label }} {{ form.email(size=32) }}<br><br>
-    {{ form.password.label }} {{ form.password(size=32) }}<br><br>
-    {{ form.confirm.label }} {{ form.confirm(size=32) }}<br><br>
-    {{ form.submit() }}
-</form>
+<div class="form-container">
+    <h2>Register</h2>
+    <form method="POST">
+        <label>Full Name</label>
+        <input type="text" name="fullname" required>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Gender</label>
+        <input type="radio" name="gender" value="boy" required> Boy
+        <input type="radio" name="gender" value="girl"> Girl
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" required>
+
+        <button type="submit">Register</button>
+    </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 {% endblock %}

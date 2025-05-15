@@ -1,121 +1,269 @@
-/* Static/style.css */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    background-color: #f5f5f5;
+/* Reset and Base */
+* {
+    box-sizing: border-box;
 }
 
-/* Navigation */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Navigation Bar */
 nav {
-    background: #0077cc;
-    padding: 10px;
-    text-align: center;
+    width: 100%;
+    background-color: #4b6cb7;  /* nice blue-purple gradient */
+    background-image: linear-gradient(315deg, #4b6cb7 0%, #182848 74%);
+    padding: 15px 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    gap: 30px;
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 15px;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
 }
 
-/* Container */
-.container {
-    padding: 20px;
+nav a:hover {
+    color: #ffd369;
+    text-decoration: underline;
 }
 
-/* Attractive Background with Gradient */
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, rgba(78, 84, 200, 0.8), rgba(143, 148, 251, 0.8)), url('https://your-background-image-url.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-}
-
-/* Login Box Styling */
-.login-box {
-    background: rgba(255, 255, 255, 0.9);  /* Light transparent white background */
-    padding: 40px;
+/* Container (Form Wrappers) */
+.container, .form-container, .login-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    max-width: 420px;
+    margin: 60px auto 40px auto;
+    padding: 40px 45px;
     border-radius: 15px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);  /* Soft shadow for the box */
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Heading */
-.login-box h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+/* Headings */
+h1, h2 {
+    font-weight: 700;
     color: #333;
+    text-align: center;
+    margin-bottom: 25px;
+    letter-spacing: 1.1px;
 }
 
-.login-box .highlight {
+h2 .highlight {
     color: #ffd369;
 }
 
-/* Form Structure */
+/* Form Group */
 .form-group {
     margin-bottom: 20px;
-    text-align: left;
 }
 
-.form-group label {
-    font-size: 1.1rem;
+label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
     color: #555;
+    user-select: none;
 }
 
-.input-field {
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
     width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+    padding: 14px 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
     font-size: 1rem;
-    background: transparent;
+    transition: border-color 0.3s ease;
+    background-color: #f9f9f9;
+    color: #333;
 }
 
-.input-field:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
     outline: none;
-    border-color: #49c8f6;
+    border-color: #667eea;
+    background-color: #fff;
+    box-shadow: 0 0 6px #667eea88;
 }
 
-/* Submit Button */
-.submit-btn {
-    background-color: #ffd369;
-    color: #222;
-    padding: 12px 20px;
-    border-radius: 8px;
-    border: none;
-    font-size: 1.1rem;
-    width: 100%;
+/* Gender Radio Buttons */
+.gender-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+.gender-options label {
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    color: #444;
 }
 
-.submit-btn:hover {
-    background-color: #f7c948;
+.gender-options input[type="radio"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/* Buttons */
+button, .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ffd369, #f7c948);
+    border: none;
+    padding: 14px;
+    margin-top: 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #222;
+    box-shadow: 0 6px 12px rgba(247, 201, 72, 0.5);
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+button:hover, .submit-btn:hover {
+    background: linear-gradient(135deg, #f7c948, #ffd369);
+    box-shadow: 0 10px 20px rgba(247, 201, 72, 0.7);
     transform: scale(1.05);
 }
 
-/* Footer Links */
+/* Footer Links under Forms */
 .form-footer {
     margin-top: 15px;
     font-size: 0.9rem;
     color: #555;
+    text-align: center;
 }
 
 .form-footer a {
     color: #6cd7b9;
+    font-weight: 600;
     text-decoration: none;
-    font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 .form-footer a:hover {
+    text-decoration: underline;
+    color: #4a9c8c;
+}
+
+/* Flash Messages */
+.flash {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+    user-select: none;
+}
+
+.flash.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1.5px solid #c3e6cb;
+}
+
+.flash.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1.5px solid #f5c6cb;
+}
+
+/* Responsive Layout */
+@media (max-width: 480px) {
+    .container, .form-container, .login-box {
+        margin: 30px 20px;
+        padding: 30px 25px;
+    }
+    nav {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+}
+
+/* Background gradient for login/register pages */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px 20px;
+}
+
+/* Centered login box */
+.login-box {
+    background: white;
+    padding: 40px 40px;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Dashboard container */
+.dashboard-container {
+    background: white;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    color: #333;
+}
+
+/* Profile picture styling */
+.profile-pic {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 4px solid #ffd369;
+}
+
+/* Buttons for dashboard actions */
+.btn-primary {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background: #4b54c5;
+}
+
+/* Link styling */
+a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+a:hover {
     text-decoration: underline;
 }
