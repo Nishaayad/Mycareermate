@@ -44,40 +44,53 @@ def index():
         user_prompt = request.form["prompt"]
         suggestion = carrermate_aibot(user_prompt)  
     return render_template("index.html", suggestion=suggestion)
-from forms import RegisterForm
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['fullname']
-        email = request.form['email']
-        gender = request.form['gender']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
+        try:
+            name = request.form['fullname']
+            email = request.form['email']
+            gender = request.form['gender']
+            password = request.form['password']
+            confirm_password = request.form['confirm_password']
 
-        if password != confirm_password:
-            flash("Passwords don't match!", "error")
+            if password != confirm_password:
+                flash("Passwords don't match!", "error")
+                return redirect(url_for('register'))
+
+            cur = mysql.connection.cursor()
+            # Check if user already exists
+            cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+            existing_user = cur.fetchone()
+
+            if existing_user:
+                flash("Email already exists!", "error")
+                cur.close()
+                return redirect(url_for('register'))
+
+            profile_pic = 'boy.png' if gender == 'boy' else 'woman.png'
+            hashed_password = generate_password_hash(password)
+
+            # Insert new user
+            cur.execute(
+                "INSERT INTO users (name, email, password, gender, profile_pic) VALUES (%s, %s, %s, %s, %s)",
+                (name, email, hashed_password, gender, profile_pic)
+            )
+            mysql.connection.commit()
+            cur.close()
+
+            flash("Registered successfully! Please log in.", "success")
+            return redirect(url_for('login'))
+
+        except Exception as e:
+            print("MySQL Error:", e)
+            flash("Database error: " + str(e), "error")
             return redirect(url_for('register'))
 
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
-        existing_user = cur.fetchone()
-
-        if existing_user:
-            flash("Email already exists!", "error")
-            return redirect(url_for('register'))
-
-        profile_pic = 'boy.png' if gender == 'boy' else 'woman.png'
-        hashed_password = generate_password_hash(password)
-        cur.execute("INSERT INTO users (name, email, password, gender, profile_pic) VALUES (%s, %s, %s, %s, %s)",
-            (name, email, hashed_password, gender, profile_pic))
-        mysql.connection.commit()
-        cur.close()
-
-        flash("Registered successfully! Please log in.", "success")
-        return redirect(url_for('login'))
-
+    # GET request renders register page
     return render_template('register.html')
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
