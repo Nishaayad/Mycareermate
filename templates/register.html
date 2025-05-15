@@ -1,32 +1,31 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}Register - MyCareerMate{% endblock %}
+
 {% block content %}
-<div class="form-container">
-    <h2>Register</h2>
-    <form method="POST">
-        <label>Full Name</label>
-        <input type="text" name="fullname" required>
+<h2>Create your account</h2>
 
-        <label>Email</label>
-        <input type="email" name="email" required>
+<form method="POST" action="{{ url_for('register') }}">
+    <label for="fullname">Full Name</label>
+    <input type="text" id="fullname" name="fullname" required>
 
-        <label>Gender</label>
-        <input type="radio" name="gender" value="boy" required> Boy
-        <input type="radio" name="gender" value="girl"> Girl
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
 
-        <label>Password</label>
-        <input type="password" name="password" required>
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender" required>
+        <option value="">Select Gender</option>
+        <option value="boy">Boy</option>
+        <option value="woman">Woman</option>
+    </select>
 
-        <label>Confirm Password</label>
-        <input type="password" name="confirm_password" required>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required>
 
-        <button type="submit">Register</button>
-    </form>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
+    <label for="confirm_password">Confirm Password</label>
+    <input type="password" id="confirm_password" name="confirm_password" required>
+
+    <button type="submit">Register</button>
+</form>
+
+<p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
 {% endblock %}

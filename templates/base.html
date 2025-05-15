@@ -1,25 +1,23 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>{% block title %}MyCareerMate{% endblock %}</title>
-    <!-- Only one CSS file, make sure this is your updated CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('register') }}">Register</a>
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        {% if session.get('user') %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-        {% endif %}
+    <nav class="navbar">
+        <h2>MyCareerMate</h2>
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
     </nav>
 
-    <!-- Flash messages OUTSIDE nav -->
-    <div class="flash-container">
+    <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
@@ -27,9 +25,7 @@
             {% endfor %}
           {% endif %}
         {% endwith %}
-    </div>
 
-    <div class="container">
         {% block content %}{% endblock %}
     </div>
 </body>

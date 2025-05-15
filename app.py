@@ -48,7 +48,7 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['fullname']
+        username = request.form['fullname']
         email = request.form['email']
         gender = request.form['gender']
         password = request.form['password']
@@ -59,6 +59,7 @@ def register():
             return redirect(url_for('register'))
 
         cur = mysql.connection.cursor()
+
         cur.execute("SELECT * FROM users WHERE email=%s", (email,))
         existing_user = cur.fetchone()
 
@@ -68,20 +69,19 @@ def register():
 
         profile_pic = 'boy.png' if gender == 'boy' else 'woman.png'
         hashed_password = generate_password_hash(password)
-        try:
-            cur.execute("INSERT INTO users (name, email, password, gender, profile_pic) VALUES (%s, %s, %s, %s, %s)",
-                        (name, email, hashed_password, gender, profile_pic))
-            mysql.connection.commit()
-            flash("Registered successfully! Please log in.", "success")
-        except Exception as e:
-            flash("Database error: " + str(e), "error")
-        finally:
-            cur.close()
 
+        cur.execute("""
+            INSERT INTO users (username, email, password, profile_pic)
+            VALUES (%s, %s, %s, %s)
+        """, (username, email, hashed_password, profile_pic))
+
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Registered successfully! Please log in.", "success")
         return redirect(url_for('login'))
 
     return render_template('register.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

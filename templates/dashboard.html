@@ -1,27 +1,134 @@
-<div class="profile-summary">
-    <img src="{{ url_for('static', filename='profile_pics/' ~ user_pic) }}" width="100">
-    <p>Welcome, {{ session['user'] }}</p>
-    <a href="{{ url_for('profile') }}">View Full Profile</a>
-    <a href="{{ url_for('update_profile') }}">Edit Profile</a>
-    <a href="{{ url_for('career_suggestion') }}">Get Career Suggestions</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Career Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<style>
+ body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Background image with cover */
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-</div>
 
-<!-- Show message if any -->
-{% if message %}
-    <p style="color: green;">{{ message }}</p>
-{% endif %}
+.dashboard-container {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 40px 60px;
+  border-radius: 20px;
+  text-align: center;
+  width: 380px;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+}
 
-<!-- Show submitted career data -->
-<h3>Your Career Entries:</h3>
-<ul>
-    {% for entry in career_entries %}
-        <li><strong>Interest:</strong> {{ entry[0] }},
-            <strong>Skills:</strong> {{ entry[1] }},
-            <strong>Goal:</strong> {{ entry[2] }},
-            <strong>Role:</strong> {{ entry[3] }}</li>
-            <img src="{{ url_for('static', filename='uploads/' + user_pic) if user_pic not in ['boy.png', 'woman.png', 'default.png'] else url_for('static', filename='images/' + user_pic) }}" 
-     alt="Profile Pic" width="100" height="100" style="border-radius: 50%;">
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px #ffd700;
+}
 
-    {% endfor %}
-</ul>
+p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  color: #ddd;
+}
+
+.btn {
+  display: inline-block;
+  margin: 15px 10px 0 10px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  background: #ffd700;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 0 15px #ffd700;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn:hover {
+  background: #e6c200;
+  color: #000;
+  box-shadow: 0 0 25px #e6c200;
+}
+
+/* Icons Section */
+.icon-section {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 35px;
+}
+
+.icon-box {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 25px 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  text-align: center;
+  width: 110px;
+  cursor: default;
+  transition: box-shadow 0.3s ease;
+}
+
+.icon-box:hover {
+  box-shadow: 0 0 30px 6px rgba(255, 215, 0, 1);
+}
+
+.icon-box i {
+  font-size: 50px;
+  color: #ffd700;
+  margin-bottom: 12px;
+  text-shadow: 0 0 10px #ffd700;
+}
+
+.icon-box p {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #fff;
+  user-select: none;
+}
+
+</style>
+<body>
+  <div class="dashboard-container">
+    <img src="{{ url_for('static', filename='profile_pics/' + user_pic) }}" alt="Profile Pic" class="profile-pic" />
+    <h1>Welcome, {{ session['user'] }}!</h1>
+    <p>Your career journey starts here. Set goals, update your skills, and get personalized suggestions.</p>
+
+    <a href="{{ url_for('update_profile') }}" class="btn">Edit Profile</a>
+    <a href="{{ url_for('career_suggestion') }}" class="btn">Get Career Suggestions</a>
+    <a href="{{ url_for('logout') }}" class="btn" style="background:#ff4444; color:white;">Logout</a>
+
+    <h2>Your Career Entries</h2>
+    <ul class="career-list">
+      {% for entry in career_entries %}
+      <li>
+        <strong>Interest:</strong> {{ entry.interest }}<br />
+        <strong>Skills:</strong> {{ entry.skills }}<br />
+        <strong>Goal:</strong> {{ entry.goal }}<br />
+        <strong>Role:</strong> {{ entry.role }}
+      </li>
+      {% else %}
+      <li>No career entries found. Start by adding your goals!</li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>
