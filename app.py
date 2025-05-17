@@ -30,11 +30,8 @@ def home():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    # Get the user query from the form
     user_query = request.form['user_input']
-    # Call the chatbot function to get the response
     bot_response = carrermate_aibot(user_query)
-    # Render the chatbot page with the query and bot response
     return render_template('chatbot.html', user_input=user_query, bot_response=bot_response)
 
 @app.route("/", methods=["GET", "POST"])
@@ -85,9 +82,9 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()  # WTForm ka object banaya
+    form = LoginForm()  
 
-    if form.validate_on_submit():  # agar form submit hua & valid hai
+    if form.validate_on_submit():  
         email = form.email.data
         password = form.password.data
         
