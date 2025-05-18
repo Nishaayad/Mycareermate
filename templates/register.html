@@ -2,30 +2,32 @@
 {% block title %}Register - MyCareerMate{% endblock %}
 
 {% block content %}
-<h2>Create your account</h2>
+<div class="container register-container">
+    <h2>Create your account</h2>
 
-<form method="POST" action="{{ url_for('register') }}">
-    <label for="fullname">Full Name</label>
-    <input type="text" id="fullname" name="fullname" required>
+    <form method="POST" action="{{ url_for('register') }}">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" name="fullname" placeholder="Your full name" required>
 
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" required>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="example@mail.com" required>
 
-    <label for="gender">Gender</label>
-    <select id="gender" name="gender" required>
-        <option value="">Select Gender</option>
-        <option value="boy">Boy</option>
-        <option value="woman">Woman</option>
-    </select>
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="boy">Boy</option>
+            <option value="woman">Woman</option>
+        </select>
 
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Choose a strong password" required>
 
-    <label for="confirm_password">Confirm Password</label>
-    <input type="password" id="confirm_password" name="confirm_password" required>
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
 
-    <button type="submit">Register</button>
-</form>
+        <button type="submit">Register</button>
+    </form>
 
-<p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+</div>
 {% endblock %}

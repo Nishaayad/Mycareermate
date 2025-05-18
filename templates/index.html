@@ -1,137 +1,165 @@
-<!-- templates/index.html -->
 {% extends 'base.html' %}
 
 {% block title %}Home | MyCareerMate{% endblock %}
 
 {% block content %}
 <style>
-    .hero {
-        background: linear-gradient(135deg, #4e54c8, #8f94fb);
-        color: white;
-        padding: 60px 20px;
-        text-align: center;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .hero h1 {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        font-weight: bold;
-    }
-
-    .hero p {
-        font-size: 1.25rem;
-        line-height: 1.6;
-    }
-
-    .cta {
-        margin-top: 30px;
-    }
-
-    .cta a {
-        text-decoration: none;
-        background-color: #ffffff;
-        color: #4e54c8;
-        padding: 12px 25px;
-        border-radius: 30px;
-        font-weight: bold;
-        transition: 0.3s ease;
-    }
-
-    .cta a:hover {
-        background-color: #e0e0ff;
-    }
-
-    .welcome {
-        margin-top: 30px;
-        font-size: 1.2rem;
-        font-weight: 500;
-        color: #f0f0f0;
-        text-align: center;
-    }
-
-    .ai-form {
+    .container {
         margin-top: 40px;
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 20px;
     }
 
-    .ai-form input[type="text"] {
-        padding: 12px;
-        width: 60%;
-        border: none;
-        border-radius: 25px;
-        margin-right: 10px;
+    /* Heading style */
+    h1 {
+        font-size: 2.8rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #34495e;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    /* Image styling */
+    .career-image {
+        width: 100%;
+        max-width: 600px;
+        display: block;
+        margin: 20px auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Button styles */
+    .btn-group {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .btn-group a {
+        display: inline-block;
+        background-color: #2980b9;
+        color: white;
+        padding: 12px 28px;
+        border-radius: 30px;
+        text-decoration: none;
+        margin: 8px 12px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-group a:hover {
+        background-color: #1f618d;
+    }
+
+    /* AI section styling */
+    .ai-section {
+        background-color: #ecf0f1;
+        padding: 30px 20px;
+        border-radius: 15px;
+        max-width: 700px;
+        margin: 0 auto 60px auto;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .ai-section h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .ai-section form {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .ai-section input[type="text"] {
+        flex: 1 1 300px;
+        padding: 12px 15px;
         font-size: 1rem;
+        border-radius: 25px;
+        border: 1px solid #bdc3c7;
         outline: none;
     }
 
-    .ai-form button {
-        padding: 12px 20px;
+    .ai-section button {
+        padding: 12px 30px;
         border: none;
-        background-color: #ffffff;
-        color: #4e54c8;
-        font-weight: bold;
+        background-color: #2980b9;
+        color: white;
         border-radius: 25px;
+        font-weight: 600;
         cursor: pointer;
-        transition: 0.3s;
+        transition: background-color 0.3s ease;
     }
 
-    .ai-form button:hover {
-        background-color: #e0e0ff;
+    .ai-section button:hover {
+        background-color: #1f618d;
     }
 
     .response-section {
-        margin-top: 30px;
-        background-color: rgba(255, 255, 255, 0.1);
+        margin-top: 25px;
+        background: white;
         padding: 20px;
         border-radius: 15px;
-        text-align: left;
-    }
-
-    .response-section h3 {
-        margin-bottom: 10px;
-    }
-
-    .response-section p {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        color: #2c3e50;
         font-size: 1rem;
-        color: #f1f1f1;
-        line-height: 1.6;
+        line-height: 1.5;
+    }
+
+    /* Welcome message */
+    .welcome-msg {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 1.2rem;
+        color: #27ae60;
+        font-weight: 600;
     }
 </style>
 
-<div class="hero">
+<div class="container">
     <h1>Welcome to MyCareerMate</h1>
-    <p>Your <strong>AI-Powered Career Companion</strong> ✨</p>
     <p>
-        Navigating the professional world as a student or fresher can be overwhelming,
-        but you don’t have to do it alone.<br>
-        MyCareerMate is here to guide you with personalized career advice, resume help,
-        interview prep, and more — all powered by smart AI tools. 💼🚀
+        Your AI-powered companion for career guidance, resume building, interview tips, and much more!
+        Designed especially for students and freshers to start their career journey with confidence.
     </p>
 
-    <div class="cta">
+    <img src="{{ url_for('static', filename='images/career_image.jpg') }}" alt="Career guidance illustration" class="career-image">
+
+    <div class="btn-group">
         {% if session.get('user') %}
-            <p class="welcome">Welcome, {{ session['user'] }}! 🎉</p>
+            <div class="welcome-msg">Welcome, {{ session['user'] }}! 👋</div>
         {% else %}
             <a href="{{ url_for('login') }}">Login</a>
-            &nbsp; or &nbsp;
             <a href="{{ url_for('register') }}">Register</a>
         {% endif %}
         <a href="{{ url_for('career_form') }}">Career Form</a>
     </div>
 
-    <div class="ai-form">
+    <div class="ai-section">
+        <h2>Ask Our AI Assistant</h2>
         <form method="post">
-            <input type="text" name="prompt" placeholder="Ask our AI assistant anything..." required>
+            <input type="text" name="prompt" placeholder="Type your question here..." required>
             <button type="submit">Submit</button>
         </form>
-    </div>
 
-    {% if suggestion %}
-    <div class="response-section">
-        <h3>AI Response:</h3>
-        <p>{{ suggestion }}</p>
+        {% if suggestion %}
+        <div class="response-section">
+            <strong>AI Response:</strong>
+            <p>{{ suggestion }}</p>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
+
 {% endblock %}

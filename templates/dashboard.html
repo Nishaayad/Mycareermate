@@ -143,7 +143,7 @@
       {% endif %}
     {% endwith %}
 
-    <img src="{{ url_for('static', filename='images /' + user_pic) }}" alt="Profile Pic" class="profile-pic" />
+    <img src="{{ url_for('static', filename='css/images/' + user_pic) }}" class="profile-pic" />
     <h1>Welcome, {{ session.get('user', 'Guest') }}!</h1>
 
     <a href="{{ url_for('update_profile') }}" class="btn">Edit Profile</a>

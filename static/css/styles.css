@@ -1,3 +1,4 @@
+/* Base styles */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f4f6f8;
@@ -5,6 +6,7 @@ body {
     padding: 0;
 }
 
+/* Navbar */
 .navbar {
     background-color: #1e88e5;
     padding: 15px 30px;
@@ -25,42 +27,116 @@ body {
     text-decoration: none;
     font-weight: 500;
 }
+.home-container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px 30px;
+}
+
+.home-grid {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.career-section, .ai-section {
+    flex: 1 1 420px;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.home-image {
+    max-width: 100%;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
 
 .container {
     max-width: 900px;
     margin: 30px auto;
-    padding: 20px;
+    padding: 20px 30px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
+/* Register page specific container */
+.register-container {
+    max-width: 480px;
+    margin: 50px auto;
+    padding: 40px 30px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.1);
+    border-radius: 15px;
+}
+
+.register-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #222;
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"],
-select,
-textarea {
+select {
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    padding: 14px 12px;
+    margin: 12px 0 20px 0;
+    border-radius: 8px;
+    border: 1.8px solid #ccc;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
+    border-color: #1e88e5;
+    outline: none;
 }
 
 button {
     background-color: #1e88e5;
     color: white;
     border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
+    padding: 14px 0;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #1565c0;
 }
 
+.register-container p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+}
+
+.register-container a {
+    color: #1e88e5;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-container a:hover {
+    text-decoration: underline;
+}
+
+/* Flash messages */
 .flash-container {
   position: fixed;
   top: 10px;

@@ -6,7 +6,84 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+  <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: url("{{ url_for('static', filename='images/bg.jpg') }}") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+  }
 
+  header, footer {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 15px 30px;
+    text-align: center;
+  }
+
+  nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+  }
+
+  main {
+    background-color: rgba(255, 255, 255, 0.85);
+    margin: 40px auto;
+    padding: 40px;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+
+  .button-group button {
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    margin: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .button-group button:hover {
+    background-color: #0097a7;
+  }
+
+  footer p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  /* Flash message styling */
+  .flash-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+  .flash {
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+  }
+  .flash.success {
+    background-color: #24c3b6;
+  }
+  .flash.error {
+    background-color: #f44336;
+  }
+  </style>
 </head>
 <body>
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -19,17 +96,35 @@
   {% endif %}
   {% endwith %}
 
-  <nav class="navbar">
-      <h2>MyCareerMate</h2>
-      <ul>
-          <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-          <li><a href="{{ url_for('profile') }}">Profile</a></li>
-          <li><a href="{{ url_for('logout') }}">Logout</a></li>
-      </ul>
-  </nav>
+  <header>
+    <h1>MyCareerMate</h1>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/profile">Profile</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
 
-  <div class="container">
-      {% block content %}{% endblock %}
-  </div>
+  <main>
+    <h2>Welcome to MyCareerMate</h2>
+    <p>Your AI-powered companion for career guidance, resume building, interview tips, and much more!</p>
+    <img src="{{ url_for('static', filename='images/ai-career.jpg') }}" alt="Career guidance illustration" width="300">
+
+    <div class="button-group">
+      <button onclick="location.href='/login'">Login</button>
+      <button onclick="location.href='/register'">Register</button>
+      <button onclick="location.href='/career-form'">Career Form</button>
+    </div>
+
+    <h3>Ask Our AI Assistant</h3>
+    <form action="/chat" method="post">
+      <input type="text" name="prompt" placeholder="Type your question here..." required style="padding:10px; width:60%;">
+      <button type="submit" class="btn">Submit</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 MyCareerMate. All rights reserved.</p>
+  </footer>
 </body>
 </html>
