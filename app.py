@@ -85,8 +85,9 @@ def register():
     return render_template('register.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
+    form = LoginForm()  
+
+    if form.validate_on_submit():  
         email = form.email.data
         password = form.password.data
 
@@ -109,6 +110,7 @@ def login():
             flash('❌ Invalid email or password', 'danger')
 
     return render_template('login.html', form=form)
+
 
 
 @app.route('/signup', methods=['GET', 'POST'])

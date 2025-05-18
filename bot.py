@@ -7,7 +7,7 @@ load_dotenv()
 api_key = os.getenv("NVIDIA_API_KEY")
 
 chat_model = ChatNVIDIA(
-    model="mistralai/mistral-7b-instruct-v0.3",  # Make sure the model name is correct
+    model="mistralai/mistral-7b-instruct-v0.3", 
     api_key=api_key
 )
 
