@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, session, request, flash
+from flask import Flask, render_template, redirect, url_for, session, request,flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mysqldb import MySQL
 from forms import RegisterForm, LoginForm
@@ -7,12 +7,16 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from bot import carrermate_aibot 
 from functools import wraps
+from forms import ForgotPasswordForm 
+from MySQLdb.cursors import DictCursor
 import os
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY') 
+app.config['SECRET_KEY'] = 'mycareermate21@'
+
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -30,11 +34,8 @@ def home():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    # Get the user query from the form
     user_query = request.form['user_input']
-    # Call the chatbot function to get the response
     bot_response = carrermate_aibot(user_query)
-    # Render the chatbot page with the query and bot response
     return render_template('chatbot.html', user_input=user_query, bot_response=bot_response)
 
 @app.route("/", methods=["GET", "POST"])
@@ -82,32 +83,33 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()  # WTForm ka object banaya
-
-    if form.validate_on_submit():  # agar form submit hua & valid hai
+    form = LoginForm()
+    if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
+
+        # Use DictCursor to get column names as keys
+        cur = mysql.connection.cursor(DictCursor)
+        cur.execute("SELECT * FROM users WHERE email = %s", (email,))
         user = cur.fetchone()
         cur.close()
-        
-        if user:
-            stored_password_hash = user[3] 
-            if check_password_hash(stored_password_hash, password):
-                session['user'] = user[1] 
-                flash('Login successful!', 'success')
-                return redirect('/dashboard')
-            else:
-                flash('Incorrect password', 'error')
-        else:
-            flash('Email not registered', 'error')
 
-    return render_template('login.html', form=form)  
+        if user and check_password_hash(user['password'], password):
+            # ✅ Store all relevant session info
+            session['user'] = user['username']         # For displaying on dashboard
+            session['email'] = user['email']           # For fetching from DB
+            session['gender'] = user['gender']
+            session['profile_pic'] = user['profile_pic']
+            
+            flash(f'✅ Welcome back, {user["username"]}!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('❌ Invalid email or password', 'danger')
+
+    return render_template('login.html', form=form)
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -147,9 +149,8 @@ def login_required(f):
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'user' not in session:
+        flash('⚠️ Please login to access the dashboard.', 'warning')
         return redirect(url_for('login'))
-
-    message = None
 
     if request.method == 'POST':
         interest = request.form['interest']
@@ -157,35 +158,42 @@ def dashboard():
         goal = request.form['goal']
         role = request.form['role']
 
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO career_data (username, interest, skills, goal, role) VALUES (%s, %s, %s, %s, %s)",
-                    (session['user'], interest, skills, goal, role))
-        mysql.connection.commit()
-        cur.close()
-        message = "Saved successfully!"
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO career_data (username, interest, skills, goal, role) VALUES (%s, %s, %s, %s, %s)",
+                        (session['user'], interest, skills, goal, role))
+            mysql.connection.commit()
+            cur.close()
+            flash('✅ Career data saved successfully!', 'success')
+        except Exception as e:
+            flash('❌ Something went wrong while saving your data.', 'danger')
+
     cur = mysql.connection.cursor()
-    cur.execute("SELECT profile_pic, gender FROM users WHERE email=%s", (session['user'],))
+
+    # ✅ Fetch using email now (correct)
+    cur.execute("SELECT profile_pic, gender FROM users WHERE email = %s", (session['email'],))
     result = cur.fetchone()
 
     if result:
         profile_pic, gender = result
-
         if profile_pic:
-            user_pic = profile_pic   
+            user_pic = profile_pic
         else:
-            if gender == 'boy':
-                user_pic = 'boy.png'
-            elif gender == 'girl':
+            if gender == 'girl':
                 user_pic = 'woman.png'
+            elif gender == 'boy':
+                user_pic = 'boy.png'
             else:
                 user_pic = 'default.png'
     else:
-        user_pic = 'default.png'  
+        user_pic = 'default.png'
+
+    # ✅ Fetch user's career entries using username
     cur.execute("SELECT interest, skills, goal, role FROM career_data WHERE username = %s", (session['user'],))
     career_entries = cur.fetchall()
     cur.close()
 
-    return render_template('dashboard.html', message=message, user_pic=user_pic, career_entries=career_entries)
+    return render_template('dashboard.html', user_pic=user_pic, career_entries=career_entries)
 
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -291,37 +299,48 @@ def change_password():
 
     return render_template('change_password.html', message=message)
 
-@app.route('/forgot_password', methods=['GET', 'POST'])
+@app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
-    if request.method == 'POST':
-        email = request.form['email']
-        # you can add logic here later
-        flash("Password reset link sent (dummy).", "success")
-        return redirect(url_for('login'))
+    form = ForgotPasswordForm()
 
-    return render_template('forgot_password.html')
+    if form.validate_on_submit():
+        email = form.email.data
+
+        cur = mysql.connection.cursor(DictCursor)
+        cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+        cur.close()
+
+        if user:
+            flash("✅ Account found! You can now reset your password.", "success")
+            # You can redirect to reset-password page or just render here
+            return redirect(url_for('reset_password', email=email))
+        else:
+            flash("❌ Email not found in our records.", "danger")
+
+    return render_template('forgot_password.html', form=form)
 
 
-@app.route('/upload_picture', methods=['GET', 'POST'])
+@app.route('/upload-picture', methods=['GET', 'POST'])
 def upload_picture():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
     message = None
+
     if request.method == 'POST':
-        file = request.files['profile_pic']
-        if file and allowed_file(file.filename):
+        file = request.files['profile_pic']  # 'profile_pic' must match the form input name
+
+        if file and allowed_file(file.filename):  # Check file type
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
+            file.save(filepath)  # Save file to folder
 
+            # Update DB with new filename
             cur = mysql.connection.cursor()
             cur.execute("UPDATE users SET profile_pic=%s WHERE username=%s", (filename, session['user']))
             mysql.connection.commit()
             cur.close()
-            message = "Profile picture updated!"
+            message = "✅ Profile picture updated!"
         else:
-            message = "Invalid file type. Please upload PNG, JPG, or JPEG."
+            message = "❌ Invalid file type. Please upload PNG, JPG, or JPEG."
 
     return render_template('upload_picture.html', message=message)
 
@@ -350,9 +369,9 @@ def show_data():
 
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)  
-    flash('You have been logged out.', 'success')
-    return redirect('/login')    
+    session.clear()  # Clear user session
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('login'))  
 
 if __name__ == '__main__':
     app.run(debug=True)

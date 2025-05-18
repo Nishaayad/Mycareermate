@@ -61,12 +61,34 @@ button:hover {
     background-color: #1565c0;
 }
 
+.flash-container {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+.flash {
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 10px;
+  animation: fadeOut 5s forwards;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
 .flash.success {
-    color: green;
-    margin-bottom: 15px;
+  background: linear-gradient(135deg, #1abc9c, #16a085);
 }
 
 .flash.error {
-    color: red;
-    margin-bottom: 15px;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; display: none; }
 }

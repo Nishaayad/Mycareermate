@@ -6,128 +6,164 @@
   <title>Career Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dashboard-container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 40px 60px;
+      border-radius: 20px;
+      text-align: center;
+      width: 500px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #ffd700;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 30px;
+      color: #ddd;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 15px 10px 0 10px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #222;
+      background: #ffd700;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 0 15px #ffd700;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #e6c200;
+      color: #000;
+      box-shadow: 0 0 25px #e6c200;
+    }
+
+    .logout-btn {
+      background: #ff4444;
+      color: white;
+    }
+
+    .logout-btn:hover {
+      background: #e03838;
+      box-shadow: 0 0 20px #ff4444;
+    }
+
+    /* Flash message */
+    .flash {
+      padding: 12px 20px;
+      margin: 15px auto;
+      border-radius: 10px;
+      max-width: 90%;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      animation: fadein 0.5s ease-in;
+    }
+
+    .flash-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .flash-warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .flash-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .career-list {
+      text-align: left;
+      margin-top: 20px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .career-list li {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+    }
+
+   .profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffd700;
+  margin-bottom: 20px;
+}
+
+  </style>
 </head>
-<style>
- body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* Background image with cover */
-  background: 
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-  background-size: cover;
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-.dashboard-container {
-  background: rgba(0, 0, 0, 0.7);
-  padding: 40px 60px;
-  border-radius: 20px;
-  text-align: center;
-  width: 380px;
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-}
-
-h1 {
-  font-size: 2.2rem;
-  margin-bottom: 15px;
-  text-shadow: 0 0 10px #ffd700;
-}
-
-p {
-  font-size: 1rem;
-  margin-bottom: 30px;
-  color: #ddd;
-}
-
-.btn {
-  display: inline-block;
-  margin: 15px 10px 0 10px;
-  padding: 12px 28px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #222;
-  background: #ffd700;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 0 15px #ffd700;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.btn:hover {
-  background: #e6c200;
-  color: #000;
-  box-shadow: 0 0 25px #e6c200;
-}
-
-/* Icons Section */
-.icon-section {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-bottom: 35px;
-}
-
-.icon-box {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 25px 30px;
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-  text-align: center;
-  width: 110px;
-  cursor: default;
-  transition: box-shadow 0.3s ease;
-}
-
-.icon-box:hover {
-  box-shadow: 0 0 30px 6px rgba(255, 215, 0, 1);
-}
-
-.icon-box i {
-  font-size: 50px;
-  color: #ffd700;
-  margin-bottom: 12px;
-  text-shadow: 0 0 10px #ffd700;
-}
-
-.icon-box p {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #fff;
-  user-select: none;
-}
-
-</style>
 <body>
   <div class="dashboard-container">
-    <img src="{{ url_for('static', filename='profile_pics/' + user_pic) }}" alt="Profile Pic" class="profile-pic" />
-    <h1>Welcome, {{ session['user'] }}!</h1>
-    <p>Your career journey starts here. Set goals, update your skills, and get personalized suggestions.</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <img src="{{ url_for('static', filename='images /' + user_pic) }}" alt="Profile Pic" class="profile-pic" />
+    <h1>Welcome, {{ session.get('user', 'Guest') }}!</h1>
 
     <a href="{{ url_for('update_profile') }}" class="btn">Edit Profile</a>
     <a href="{{ url_for('career_suggestion') }}" class="btn">Get Career Suggestions</a>
-    <a href="{{ url_for('logout') }}" class="btn" style="background:#ff4444; color:white;">Logout</a>
+    <a href="{{ url_for('logout') }}" class="btn logout-btn">Logout</a>
 
     <h2>Your Career Entries</h2>
     <ul class="career-list">
-      {% for entry in career_entries %}
-      <li>
-        <strong>Interest:</strong> {{ entry.interest }}<br />
-        <strong>Skills:</strong> {{ entry.skills }}<br />
-        <strong>Goal:</strong> {{ entry.goal }}<br />
-        <strong>Role:</strong> {{ entry.role }}
-      </li>
+      {% if career_entries %}
+        {% for entry in career_entries %}
+          <li>
+            <strong>Interest:</strong> {{ entry['interest'] }}<br />
+            <strong>Skills:</strong> {{ entry['skills'] }}<br />
+            <strong>Goal:</strong> {{ entry['goal'] }}<br />
+            <strong>Role:</strong> {{ entry['role'] }}
+          </li>
+        {% endfor %}
       {% else %}
-      <li>No career entries found. Start by adding your goals!</li>
-      {% endfor %}
+        <li>No career entries found. Start by adding your goals!</li>
+      {% endif %}
     </ul>
   </div>
 </body>

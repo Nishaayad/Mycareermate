@@ -1,17 +1,29 @@
 {% extends 'base.html' %}
-
-{% block title %}Profile | MyCareerMate{% endblock %}
+{% block title %}My Profile{% endblock %}
 
 {% block content %}
-<h2>User Profile</h2>
+<div class="profile-wrapper">
+    <div class="profile-banner"></div>
+    <div class="profile-card">
+        <img src="{{ url_for('static', filename='img/profile.png') }}" alt="User" class="profile-pic">
+        <h2>{{ user['name'] }}</h2>
+        <p class="role">Aspiring Software Developer</p>
+        <p class="location">📍 {{ user['location'] or 'Agra, India' }}</p>
 
-<form method="POST">
-    <label>Username:</label>
-    <input type="text" name="username" value="{{ user[0] }}" readonly><br><br>
-
-    <label>Email:</label>
-    <input type="email" name="email" value="{{ user[1] }}"><br><br>
-
-    <input type="submit" value="Update Email">
-</form>
+        <div class="profile-info">
+            <div>
+                <h4>Email</h4>
+                <p>{{ user['email'] }}</p>
+            </div>
+            <div>
+                <h4>Skills</h4>
+                <p>Python, Flask, HTML, CSS, JS, Power BI</p>
+            </div>
+            <div>
+                <h4>Education</h4>
+                <p>MCA - NIET (8.6 CGPA)</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
