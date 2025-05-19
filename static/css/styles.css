@@ -1,12 +1,9 @@
-/* Base styles */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f4f6f8;
     margin: 0;
     padding: 0;
 }
-
-/* Navbar */
 .navbar {
     background-color: #1e88e5;
     padding: 15px 30px;
@@ -15,7 +12,6 @@ body {
     align-items: center;
     color: white;
 }
-
 .navbar ul {
     list-style: none;
     display: flex;
@@ -65,8 +61,6 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
-
-/* Register page specific container */
 .register-container {
     max-width: 480px;
     margin: 50px auto;
@@ -136,7 +130,6 @@ button:hover {
     text-decoration: underline;
 }
 
-/* Flash messages */
 .flash-container {
   position: fixed;
   top: 10px;
