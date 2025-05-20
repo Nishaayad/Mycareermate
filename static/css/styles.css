@@ -1,9 +1,25 @@
-/* Universal Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Base styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #1e88e5;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
 }
 
 /* Background with overlay */
@@ -20,11 +36,21 @@ body {
 
 /* Container for pages */
 .container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 30px;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 15px;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* Register page specific container */
+.register-container {
+    max-width: 480px;
+    margin: 50px auto;
+    padding: 40px 30px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.1);
+    border-radius: 15px;
 }
 
 /* Headings */
@@ -49,28 +75,29 @@ button:hover, .btn:hover {
   background-color: #e91e63;
 }
 
-/* Forms */
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  margin-bottom: 15px;
+.register-container p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
 }
 
-label {
-  font-weight: bold;
+.register-container a {
+    color: #1e88e5;
+    font-weight: 600;
+    text-decoration: none;
 }
 
-/* Navbar (optional if using) */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 15px 30px;
-  position: sticky;
-  top: 0;
-  z-index: 999;
+.register-container a:hover {
+    text-decoration: underline;
+}
+
+/* Flash messages */
+.flash-container {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
 }
 
 .navbar a {
