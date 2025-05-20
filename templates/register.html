@@ -1,33 +1,156 @@
 {% extends 'base.html' %}
-{% block title %}Register - MyCareerMate{% endblock %}
+
+{% block title %}Register | MyCareerMate{% endblock %}
 
 {% block content %}
-<div class="container register-container">
-    <h2>Create your account</h2>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: 
+      linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+      url("{{ url_for('static', filename='images/1.jpg') }}") no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    <form method="POST" action="{{ url_for('register') }}">
-        <label for="fullname">Full Name</label>
-        <input type="text" id="fullname" name="fullname" placeholder="Your full name" required>
+  header {
+    background-color: #27ae60; /* dark green */
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+  }
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
-        <label for="gender">Gender</label>
-        <select id="gender" name="gender" required>
-            <option value="" disabled selected>Select Gender</option>
-            <option value="boy">Boy</option>
-            <option value="woman">Woman</option>
-        </select>
+  .logo a {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Choose a strong password" required>
+  .nav-links a {
+    color: white;
+    margin-left: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 18px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
+  }
 
-        <label for="confirm_password">Confirm Password</label>
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+  .nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
 
-        <button type="submit">Register</button>
-    </form>
+  .register-container {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(8.5px);
+    -webkit-backdrop-filter: blur(8.5px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    width: 350px;
+    text-align: center;
+    color: white;
+  }
 
-    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+  .register-container h2 {
+    margin-bottom: 25px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select {
+    padding: 12px 15px;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+
+  input::placeholder,
+  select {
+    color: white;
+    opacity: 0.8;
+  }
+
+  input:focus,
+  select:focus {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  button {
+    padding: 12px 0;
+    border: none;
+    border-radius: 25px;
+    background-color: #27ae60;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1.1rem;
+  }
+
+  button:hover {
+    background-color: #1e8449;
+  }
+</style>
+
+<header>
+  <div class="navbar">
+    <div class="logo">
+      <a href="{{ url_for('home') }}">MyCareerMate</a>
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('login') }}">Login</a>
+      <a href="{{ url_for('register') }}">Register</a>
+    </div>
+  </div>
+</header>
+
+<div class="register-container">
+  <h2>Create an Account</h2>
+  <form method="POST" action="{{ url_for('register') }}">
+    <input type="text" name="username" placeholder="Username" required autofocus>
+    <input type="email" name="email" placeholder="Email Address" required>
+    <select name="gender" required>
+      <option value="" disabled selected>Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    <input type="password" name="password" placeholder="Password" required>
+    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+    <button type="submit">Register</button>
+  </form>
 </div>
+
 {% endblock %}

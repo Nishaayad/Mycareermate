@@ -1,49 +1,105 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI Chat</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 20px;
-        }
-        .chat-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 600px;
-            margin: auto;
-        }
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-        }
-        input[type="submit"] {
-            padding: 10px 15px;
-            font-size: 16px;
-        }
-        .response {
-            margin-top: 20px;
-            padding: 10px;
-            background: #e6f7ff;
-            border-left: 5px solid #00bfff;
-        }
-    </style>
-</head>
-<body>
-    <div class="chat-box">
-        <h2>Ask AI</h2>
-        <form method="POST">
-            <input type="text" name="chat_input" placeholder="Enter your message..." required>
-            <input type="submit" value="Send">
-        </form>
-        {% if response %}
-        <div class="response">
-            <strong>AI:</strong> {{ response }}
-        </div>
-        {% endif %}
+{% extends 'base.html' %}
+
+{% block title %}Chat | MyCareerMate{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: 
+            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            url("{{ url_for('static', filename='images/1.jpg') }}") no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+    }
+
+    .container {
+        background-color: rgba(255, 255, 255, 0.15); /* transparent white */
+        border-radius: 15px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
+        margin: 60px auto;
+        padding: 40px 30px;
+        max-width: 700px;
+        color: #2c3e50;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #00d1b2;
+        font-weight: 700;
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+
+    form {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+        flex: 1 1 300px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        border-radius: 30px;
+        border: 2px solid #00d1b2;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+        border-color: #00775d;
+        box-shadow: 0 0 8px #00d1b2;
+    }
+
+    button {
+        padding: 15px 40px;
+        border: none;
+        background-color: #00d1b2;
+        color: white;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,209,178,0.7);
+    }
+
+    button:hover {
+        background-color: #00775d;
+        box-shadow: 0 8px 20px rgba(0,119,93,0.9);
+    }
+
+    .response-section {
+        margin-top: 30px;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        color: #2c3e50;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="container">
+    <h2>Ask Our AI Assistant</h2>
+    <form method="post">
+        <input type="text" name="prompt" placeholder="Type your question here..." required autocomplete="off">
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if suggestion %}
+    <div class="response-section">
+        <strong>AI Response:</strong>
+        <p>{{ suggestion }}</p>
     </div>
-</body>
-</html>
+    {% endif %}
+</div>
+{% endblock %}

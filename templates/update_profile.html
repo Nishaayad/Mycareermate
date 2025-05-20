@@ -2,21 +2,103 @@
 {% block title %}Update Profile{% endblock %}
 
 {% block content %}
-<h2>Update Your Profile</h2>
-<form method="POST">
-    <label>Username</label><br>
-    <input type="text" name="username" value="{{ user }}"><br><br>
+<style>
+    .profile-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px 40px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-    <label>Email</label><br>
-    <input type="email" name="email" value="{{ email }}"><br><br>
+.profile-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+}
 
-    <label>Password</label><br>
-    <input type="password" name="password" value="{{ password }}"><br><br>
+.profile-container label {
+    font-weight: 600;
+    color: #555;
+}
 
-    <input type="submit" value="Update">
-</form>
+.profile-container input[type="text"],
+.profile-container input[type="email"],
+.profile-container input[type="password"],
+.profile-container textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+}
 
-{% if message %}
-    <p>{{ message }}</p>
-{% endif %}
+.profile-container input[type="text"]:focus,
+.profile-container input[type="email"]:focus,
+.profile-container input[type="password"]:focus,
+.profile-container textarea:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.profile-container textarea {
+    resize: vertical;
+    height: 80px;
+}
+
+.btn-update {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-update:hover {
+    background-color: #45a049;
+}
+
+.success-msg {
+    margin-top: 15px;
+    color: #2e7d32;
+    font-weight: 600;
+    text-align: center;
+}
+
+</style>
+<div class="profile-container">
+    <h2>Update Your Profile</h2>
+    <form method="POST">
+        <label>Name</label><br>
+        <input type="text" name="name" value="{{ profile.name }}" required><br><br>
+
+        <label>Email</label><br>
+        <input type="email" name="email" value="{{ profile.email }}" required><br><br>
+
+        <label>Phone</label><br>
+        <input type="text" name="phone" value="{{ profile.phone }}"><br><br>
+
+        <label>Address</label><br>
+        <textarea name="address">{{ profile.address }}</textarea><br><br>
+
+        <label>Password</label><br>
+        <input type="password" name="password" placeholder="Enter new password (leave blank to keep current)"><br><br>
+
+        <input type="submit" value="Update" class="btn-update">
+    </form>
+
+    {% if message %}
+    <p class="success-msg">{{ message }}</p>
+    {% endif %}
+</div>
 {% endblock %}

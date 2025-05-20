@@ -57,7 +57,7 @@
     left: 0;
     height: 220px;
     width: 100%;
-    background-image: url('/static/img/mountains.jpg');
+    background-image: url('/static/images/boy.png');
     background-size: cover;
     background-position: center;
     z-index: -1;

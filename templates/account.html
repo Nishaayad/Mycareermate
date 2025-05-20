@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}My Account{% endblock %}
+
+{% block content %}
+<style>
+    .account-wrapper {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-pic-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007bff;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.1rem;
+    margin: 8px 0;
+    color: #555;
+}
+
+a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+a:hover {
+    background-color: #0056b3;
+}
+
+</style>
+<div class="account-wrapper">
+    <h2>Welcome, {{ profile.name if profile else session['user'] }}</h2>
+
+    <div class="profile-pic-wrapper">
+        {% if user_info and user_info.profile_pic %}
+            <img src="{{ url_for('static', filename='profile_pics/' ~ user_info.profile_pic) }}" alt="Profile Picture" class="profile-pic">
+        {% else %}
+            <img src="{{ url_for('static', filename='img/default_profile.png') }}" alt="Profile Picture" class="profile-pic">
+        {% endif %}
+    </div>
+
+    <p><strong>Email:</strong> {{ profile.email if profile else 'Not set' }}</p>
+    <p><strong>Address:</strong> {{ profile.address if profile else 'Not set' }}</p>
+    <p><strong>Skills:</strong> {{ profile.skills if profile else 'Not set' }}</p>
+    <p><strong>Role:</strong> {{ user_info.role if user_info else 'user' }}</p>
+
+    <a href="{{ url_for('profile') }}">Edit Profile</a>
+</div>
+{% endblock %}

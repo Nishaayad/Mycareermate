@@ -32,11 +32,13 @@ def allowed_file(filename):
 def home():
     return render_template('index.html')
 
-@app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['GET', 'POST'])
 def chat():
-    user_query = request.form['user_input']
-    bot_response = carrermate_aibot(user_query)
-    return render_template('chatbot.html', user_input=user_query, bot_response=bot_response)
+    suggestion = None
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        suggestion = carrermate_aibot(prompt)
+    return render_template('chat.html', suggestion=suggestion)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -91,16 +93,16 @@ def login():
         email = form.email.data
         password = form.password.data
 
-        # Use DictCursor to get column names as keys
         cur = mysql.connection.cursor(DictCursor)
         cur.execute("SELECT * FROM users WHERE email = %s", (email,))
         user = cur.fetchone()
         cur.close()
 
         if user and check_password_hash(user['password'], password):
-            # ✅ Store all relevant session info
-            session['user'] = user['username']         # For displaying on dashboard
-            session['email'] = user['email']           # For fetching from DB
+            # ✅ Store user info in session
+            session['user_id'] = user['id']           # 👈 THIS IS IMPORTANT
+            session['user'] = user['username']
+            session['email'] = user['email']
             session['gender'] = user['gender']
             session['profile_pic'] = user['profile_pic']
             
@@ -110,8 +112,6 @@ def login():
             flash('❌ Invalid email or password', 'danger')
 
     return render_template('login.html', form=form)
-
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -197,23 +197,53 @@ def dashboard():
 
     return render_template('dashboard.html', user_pic=user_pic, career_entries=career_entries)
 
-
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        address = request.form['address']
+        skills = request.form['skills']
+
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE profiles SET username=%s, email=%s, address=%s, skills=%s WHERE id=%s",
+                    (username, email, address, skills, session['user_id']))
+        mysql.connection.commit()
+        cur.close()
+        flash('Profile updated successfully!', 'success')
+        return redirect('/profile')
 
     cur = mysql.connection.cursor()
-    if request.method == 'POST':
-        new_email = request.form['email']
-        cur.execute("UPDATE users SET email = %s WHERE username = %s", (new_email, session['user']))
-        mysql.connection.commit()
-
-    cur.execute("SELECT username, email FROM users WHERE username = %s", (session['user'],))
-    user_data = cur.fetchone()
+    cur.execute("SELECT username, email, address, skills FROM profiles WHERE id = %s", (session['user_id'],))
+    data = cur.fetchone()
     cur.close()
 
-    return render_template('profile.html', user=user_data)
+    return render_template('profile.html', data=data)
+
+
+@app.route('/account')
+def account():
+    if 'user' not in session:
+        flash("⚠️ Please login first.", "warning")
+        return redirect(url_for('login'))
+
+    username = session['user']
+    cur = mysql.connection.cursor(DictCursor)
+
+    # Fetch profile details
+    cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
+    profile = cur.fetchone()
+
+    # Fetch profile picture and role from users table
+    cur.execute("SELECT profile_pic, role FROM users WHERE username = %s", (username,))
+    user_info = cur.fetchone()
+    cur.close()
+
+    return render_template('account.html', profile=profile, user_info=user_info)
+
 
 @app.route('/career_suggestion', methods=['GET', 'POST'])
 def career_suggestion():
@@ -247,32 +277,51 @@ def career_suggestion():
 
     return render_template('career_suggestion.html', suggestion=suggestion)
 
-
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update_profile():
-    if 'user' not in session:
+    if 'email' not in session:
+        flash('Please login to update your profile.', 'warning')
         return redirect(url_for('login'))
-
-    cur = mysql.connection.cursor()
     
+    email = session['email']
+    cur = mysql.connection.cursor(DictCursor)
+
     if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
+        # Get form data
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        skills = request.form.get('skills')
 
-        cur.execute("UPDATE users SET username=%s, email=%s, password=%s WHERE username=%s",
-                    (username, email, password, session['user']))
+        # Check if profile exists
+        cur.execute("SELECT * FROM profiles WHERE email = %s", (email,))
+        profile = cur.fetchone()
+
+        if profile:
+            # Update existing profile
+            cur.execute("""
+                UPDATE profiles SET name=%s, phone=%s, address=%s, skills=%s WHERE email=%s
+            """, (name, phone, address, skills, email))
+        else:
+            # Insert new profile
+            cur.execute("""
+                INSERT INTO profiles (email, name, phone, address, skills) VALUES (%s, %s, %s, %s, %s)
+            """, (email, name, phone, address, skills))
+        
         mysql.connection.commit()
-        session['user'] = username
-        message = "Profile updated successfully!"
         cur.close()
-        return render_template('update_profile.html', message=message, user=username, email=email, password=password)
+        
+        flash("Profile updated successfully!", "success")
+        # Fetch updated profile to display
+        return redirect(url_for('update_profile'))
 
-    cur.execute("SELECT username, email, password FROM users WHERE username=%s", (session['user'],))
-    user_data = cur.fetchone()
-    cur.close()
+    else:
+        # GET method: fetch current profile data to pre-fill the form
+        cur.execute("SELECT * FROM profiles WHERE email = %s", (email,))
+        profile = cur.fetchone()
+        cur.close()
 
-    return render_template('update_profile.html', user=user_data[0], email=user_data[1], password=user_data[2])
+        return render_template('update_profile.html', user=profile)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -361,6 +410,17 @@ def career_form():
         return render_template('success.html')
     return render_template('career_form.html')
 
+@app.route('/dashboard-visuals')
+def dashboard_visuals():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT career_field, COUNT(*) FROM career_data GROUP BY career_field")
+    results = cur.fetchall()
+
+    labels = [row[0] for row in results]
+    values = [row[1] for row in results]
+
+    return render_template('dashboard_visuals.html', labels=labels, values=values)
+
 @app.route('/data')
 def show_data():
     cur = mysql.connection.cursor()
@@ -374,6 +434,14 @@ def logout():
     session.clear()  # Clear user session
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('login'))  
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

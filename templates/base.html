@@ -5,126 +5,125 @@
     <title>{% block title %}MyCareerMate{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
-  <style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: url("{{ url_for('static', filename='images/bg.jpg') }}") no-repeat center center fixed;
-    background-size: cover;
-    margin: 0;
-    padding: 0;
-  }
+    <style>
+        header {
+  background-color: #00d1b2;
+  padding: 15px 30px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-  header, footer {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 15px 30px;
-    text-align: center;
-  }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-  nav a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-  }
+.logo a {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
 
-  nav a:hover {
-    text-decoration: underline;
-  }
+.nav-links a, .welcome-msg {
+  color: white;
+  margin-left: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
 
-  main {
-    background-color: rgba(255, 255, 255, 0.85);
-    margin: 40px auto;
-    padding: 40px;
-    max-width: 800px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
+.nav-links a.btn-link {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px 18px;
+  border-radius: 25px;
+  transition: background-color 0.3s ease;
+}
 
-  .button-group button {
-    background-color: #00bcd4;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    margin: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-  }
+.nav-links a.btn-link:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+footer {
+  background-color: #00d1b2;  /* Header jaisa teal green */
+  padding: 20px 0;
+  color: white;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  margin-top: 40px;
+  font-family: Arial, sans-serif;
+}
 
-  .button-group button:hover {
-    background-color: #0097a7;
-  }
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-  footer p {
-    margin: 0;
-    font-size: 14px;
-  }
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0 8px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
 
-  /* Flash message styling */
-  .flash-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-  }
-  .flash {
-    padding: 10px 20px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    color: white;
-    font-weight: bold;
-  }
-  .flash.success {
-    background-color: #24c3b6;
-  }
-  .flash.error {
-    background-color: #f44336;
-  }
-  </style>
+.footer-links a:hover {
+  color: #004d40; /* Thoda dark green hover effect */
+}
+
+</style>
 </head>
 <body>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="flash-container">
-      {% for category, message in messages %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container">
+        {% for category, message in messages %}
         <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
+        {% endfor %}
     </div>
-  {% endif %}
-  {% endwith %}
+    {% endif %}
+    {% endwith %}
 
-  <header>
-    <h1>MyCareerMate</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/profile">Profile</a>
-      <a href="/logout">Logout</a>
-    </nav>
-  </header>
-
-  <main>
-    <h2>Welcome to MyCareerMate</h2>
-    <p>Your AI-powered companion for career guidance, resume building, interview tips, and much more!</p>
-    <img src="{{ url_for('static', filename='images/ai-career.jpg') }}" alt="Career guidance illustration" width="300">
-
-    <div class="button-group">
-      <button onclick="location.href='/login'">Login</button>
-      <button onclick="location.href='/register'">Register</button>
-      <button onclick="location.href='/career-form'">Career Form</button>
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <a href="{{ url_for('home') }}">MyCareerMate 🚀</a>
     </div>
+    <div class="nav-links">
+      {% if session.get('user') %}
+        <span class="welcome-msg">Welcome, {{ session['user'] }}! 👋</span>
+        <a href="{{ url_for('dashboard') }}" class="btn-link">Dashboard</a>
+        <a href="{{ url_for('profile') }}" class="btn-link">Profile</a>
+        <a href="{{ url_for('logout') }}" class="btn-link">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn-link">Login</a>
+        <a href="{{ url_for('register') }}" class="btn-link">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+</header>
 
-    <h3>Ask Our AI Assistant</h3>
-    <form action="/chat" method="post">
-      <input type="text" name="prompt" placeholder="Type your question here..." required style="padding:10px; width:60%;">
-      <button type="submit" class="btn">Submit</button>
-    </form>
-  </main>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
-  <footer>
-    <p>&copy; 2025 MyCareerMate. All rights reserved.</p>
-  </footer>
+    <footer>
+  <div class="footer-container">
+    <p>&copy; {{ current_year }} MyCareerMate. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="{{ url_for('home') }}">Home</a> |
+      <a href="{{ url_for('about') }}">About</a> |
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
+
