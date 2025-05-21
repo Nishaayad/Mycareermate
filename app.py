@@ -99,8 +99,7 @@ def login():
         cur.close()
 
         if user and check_password_hash(user['password'], password):
-            # ✅ Store user info in session
-            session['user_id'] = user['id']           # 👈 THIS IS IMPORTANT
+            session['user_id'] = user['id']         
             session['user'] = user['username']
             session['email'] = user['email']
             session['gender'] = user['gender']
@@ -171,8 +170,6 @@ def dashboard():
             flash('❌ Something went wrong while saving your data.', 'danger')
 
     cur = mysql.connection.cursor()
-
-    # ✅ Fetch using email now (correct)
     cur.execute("SELECT profile_pic, gender FROM users WHERE email = %s", (session['email'],))
     result = cur.fetchone()
 
@@ -189,8 +186,6 @@ def dashboard():
                 user_pic = 'default.png'
     else:
         user_pic = 'default.png'
-
-    # ✅ Fetch user's career entries using username
     cur.execute("SELECT interest, skills, goal, role FROM career_data WHERE username = %s", (session['user'],))
     career_entries = cur.fetchall()
     cur.close()
@@ -233,11 +228,9 @@ def account():
     username = session['user']
     cur = mysql.connection.cursor(DictCursor)
 
-    # Fetch profile details
     cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
     profile = cur.fetchone()
 
-    # Fetch profile picture and role from users table
     cur.execute("SELECT profile_pic, role FROM users WHERE username = %s", (username,))
     user_info = cur.fetchone()
     cur.close()
@@ -287,23 +280,19 @@ def update_profile():
     cur = mysql.connection.cursor(DictCursor)
 
     if request.method == 'POST':
-        # Get form data
         name = request.form.get('name')
         phone = request.form.get('phone')
         address = request.form.get('address')
         skills = request.form.get('skills')
 
-        # Check if profile exists
         cur.execute("SELECT * FROM profiles WHERE email = %s", (email,))
         profile = cur.fetchone()
 
         if profile:
-            # Update existing profile
             cur.execute("""
                 UPDATE profiles SET name=%s, phone=%s, address=%s, skills=%s WHERE email=%s
             """, (name, phone, address, skills, email))
         else:
-            # Insert new profile
             cur.execute("""
                 INSERT INTO profiles (email, name, phone, address, skills) VALUES (%s, %s, %s, %s, %s)
             """, (email, name, phone, address, skills))
@@ -312,11 +301,10 @@ def update_profile():
         cur.close()
         
         flash("Profile updated successfully!", "success")
-        # Fetch updated profile to display
+    
         return redirect(url_for('update_profile'))
 
     else:
-        # GET method: fetch current profile data to pre-fill the form
         cur.execute("SELECT * FROM profiles WHERE email = %s", (email,))
         profile = cur.fetchone()
         cur.close()
@@ -364,7 +352,7 @@ def forgot_password():
 
         if user:
             flash("✅ Account found! You can now reset your password.", "success")
-            # You can redirect to reset-password page or just render here
+
             return redirect(url_for('reset_password', email=email))
         else:
             flash("❌ Email not found in our records.", "danger")
@@ -377,7 +365,7 @@ def upload_picture():
     message = None
 
     if request.method == 'POST':
-        file = request.files['profile_pic']  # 'profile_pic' must match the form input name
+        file = request.files['profile_pic']  
 
         if file and allowed_file(file.filename):  # Check file type
             filename = secure_filename(file.filename)
