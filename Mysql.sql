@@ -45,4 +45,17 @@ SHOW DATABASES;
 ALTER TABLE users 
 ADD COLUMN gender VARCHAR(10),
 ADD COLUMN profile_pic VARCHAR(50);
+ALTER TABLE career_data ADD COLUMN career_field VARCHAR(100);
+SELECT career_field, COUNT(*) FROM career_data GROUP BY career_field;
+CREATE TABLE profiles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100),
+    email VARCHAR(100),
+    address VARCHAR(255),
+    skills TEXT
+);
+ALTER TABLE profiles ADD COLUMN address VARCHAR(255);
+ALTER TABLE profiles ADD COLUMN skills TEXT;
+select *from profiles;
+drop table profiles;
 
