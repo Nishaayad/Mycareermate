@@ -3,73 +3,120 @@
 
 {% block content %}
 <style>
-    .account-wrapper {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 20px;
-    border-radius: 12px;
-    background-color: #f8f9fa;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* ACCOUNT PAGE STYLES */
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
-.profile-pic-wrapper {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.profile-pic {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #007bff;
+.card {
+  background: rgba(255, 255, 255, 0.8);  /* Transparent glass effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  padding: 30px;
 }
 
 h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 25px;
 }
 
-p {
-    font-size: 1.1rem;
-    margin: 8px 0;
-    color: #555;
+h5 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 18px;
 }
 
-a {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 8px 20px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
+.form-group {
+  margin-bottom: 20px;
 }
 
-a:hover {
-    background-color: #0056b3;
+.form-group label {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 8px;
+  display: block;
 }
 
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: 0.3s;
+  background-color: #fff;
+}
+
+input[type="password"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
 </style>
-<div class="account-wrapper">
-    <h2>Welcome, {{ profile.name if profile else session['user'] }}</h2>
 
-    <div class="profile-pic-wrapper">
-        {% if user_info and user_info.profile_pic %}
-            <img src="{{ url_for('static', filename='profile_pics/' ~ user_info.profile_pic) }}" alt="Profile Picture" class="profile-pic">
-        {% else %}
-            <img src="{{ url_for('static', filename='img/default_profile.png') }}" alt="Profile Picture" class="profile-pic">
-        {% endif %}
-    </div>
+<div class="container">
+  <h2 class="text-center">⚙️ Account Settings</h2>
 
-    <p><strong>Email:</strong> {{ profile.email if profile else 'Not set' }}</p>
-    <p><strong>Address:</strong> {{ profile.address if profile else 'Not set' }}</p>
-    <p><strong>Skills:</strong> {{ profile.skills if profile else 'Not set' }}</p>
-    <p><strong>Role:</strong> {{ user_info.role if user_info else 'user' }}</p>
+  <div class="card">
+    <form method="POST" action="{{ url_for('change_password') }}">
+      <h5>🔐 Change Password</h5>
 
-    <a href="{{ url_for('profile') }}">Edit Profile</a>
+      <div class="form-group">
+        <label>Current Password</label>
+        <input type="password" name="current_password" required>
+      </div>
+
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" name="new_password" required>
+      </div>
+
+      <button type="submit" class="btn btn-success">Update Password</button>
+    </form>
+
+    <hr>
+
+    <form method="POST" action="{{ url_for('delete_account') }}">
+      <button type="submit" class="btn btn-danger">🗑️ Delete My Account</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

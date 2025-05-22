@@ -1,8 +1,8 @@
-{% extends 'base.html' %}
-
-{% block title %}Home | MyCareerMate{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Page Name - MyCareerMate{% endblock %}
 {% block content %}
+
+
 <style>
     body {
         margin: 0;
@@ -10,7 +10,7 @@
         font-family: Arial, sans-serif;
         background: 
             linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-            url("{{ url_for('static', filename='images/1.jpg') }}") no-repeat center center fixed;
+            url("{{ url_for('static', filename='images/bg.jpg') }}") no-repeat center center fixed;
         background-size: cover;
         min-height: 100vh;
     }
@@ -63,7 +63,11 @@
 
 <div class="container hero">
     <h1>Welcome to <span>MyCareerMate 🚀</span></h1>
-    <p>Your AI-powered career guidance companion!</p>
+    <p>Your AI Career Companion for Smarter Choices & Brighter Futures!</p>
     <a href="{{ url_for('chat') }}" class="btn-primary">Start Chatting</a>
+    <p style="margin-top: 15px;">
+      <small>Or <a href="{{ url_for('login') }}">Log in</a> for a personalized experience.</small>
+    </p>
+    
 </div>
 {% endblock %}

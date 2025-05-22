@@ -1,13 +1,12 @@
-{% extends 'base.html' %}
-
-{% block title %}Login | MyCareerMate{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Page Name - MyCareerMate{% endblock %}
 {% block content %}
+
 <style>
   body {
     background: 
       linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-      url("{{ url_for('static', filename='images/1.jpg') }}") no-repeat center center fixed;
+      url("{{ url_for('static', filename='images/2.jpg') }}") no-repeat center center fixed;
     background-size: cover;
     min-height: 100vh;
     margin: 0;
@@ -88,15 +87,6 @@
 
 <div class="login-container">
   <h2>Login to MyCareerMate</h2>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash-message {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-
   <form method="POST" action="{{ url_for('login') }}">
     <input type="text" name="username" placeholder="Username" required autofocus>
     <input type="password" name="password" placeholder="Password" required>

@@ -1,126 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}MyCareerMate{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        header {
-            background-color: #00d1b2;
-            padding: 15px 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+  <meta charset="UTF-8">
+  <title>{% block title %}MyCareerMate{% endblock %}</title>
+  
+  <!-- External CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: url('/static/images/3.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
 
-        .logo a {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-decoration: none;
-        }
+    .background-overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        .nav-links a, .welcome-msg {
-            color: white;
-            margin-left: 20px;
-            font-weight: 600;
-            text-decoration: none;
-        }
+    header {
+      background-color: #00d1b2;
+      padding: 15px 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-        .nav-links a.btn-link {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 8px 18px;
-            border-radius: 25px;
-            transition: background-color 0.3s ease;
-        }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        .nav-links a.btn-link:hover {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
+    .logo a {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
 
-        footer {
-            background-color: #00d1b2;
-            padding: 20px 0;
-            color: white;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-            margin-top: 40px;
-            font-family: Arial, sans-serif;
-        }
+    .nav-links a, .welcome-msg {
+      color: white;
+      margin-left: 20px;
+      font-weight: 600;
+      text-decoration: none;
+    }
 
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    .nav-links a.btn-link {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 8px 18px;
+      border-radius: 25px;
+      transition: background-color 0.3s ease;
+    }
 
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 8px;
-            font-weight: 600;
-        }
+    .nav-links a.btn-link:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
 
-        .footer-links a:hover {
-            color: #004d40;
-        }
-    </style>
+    .flash-container {
+      margin: 20px auto;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .alert {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    footer {
+      background-color: #00d1b2;
+      padding: 20px 0;
+      color: white;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-links a {
+      color: white;
+      text-decoration: none;
+      margin: 0 8px;
+      font-weight: 600;
+    }
+
+    .footer-links a:hover {
+      color: #004d40;
+    }
+  </style>
 </head>
 <body>
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-      <div class="container">
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
         {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
+          <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %}
       </div>
-      {% endif %}
-    {% endwith %}
-    
-    <!-- Header -->
-    <header>
-      <nav class="navbar">
-        <div class="logo">
-          <a href="{{ url_for('home') }}">MyCareerMate 🚀</a>
-        </div>
-        <div class="nav-links">
-          {% if session.get('user') %}
-            <span class="welcome-msg">Welcome, {{ session['user'] }}! 👋</span>
-            <a href="{{ url_for('dashboard') }}" class="btn-link">Dashboard</a>
-            <a href="{{ url_for('profile') }}" class="btn-link">Profile</a>
-            <a href="{{ url_for('logout') }}" class="btn-link">Logout</a>
-          {% else %}
-            <a href="{{ url_for('login') }}" class="btn-link">Login</a>
-            <a href="{{ url_for('register') }}" class="btn-link">Register</a>
-          {% endif %}
-        </div>
-      </nav>
-    </header>
+    {% endif %}
+  {% endwith %}
 
-    <!-- Page content -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer>
-      <div class="footer-container">
-        <p>&copy; {{ current_year }} MyCareerMate. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="{{ url_for('home') }}">Home</a> |
-          <a href="{{ url_for('about') }}">About</a> |
-          <a href="{{ url_for('contact') }}">Contact</a>
-        </div>
+  <!-- Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <a href="{{ url_for('home') }}">MyCareerMate 🚀</a>
       </div>
-    </footer>
+      <div class="nav-links">
+        {% if session.get('user') %}
+          <span class="welcome-msg">Welcome, {{ session['user'] }}! 👋</span>
+          <a href="{{ url_for('dashboard') }}" class="btn-link">Dashboard</a>
+          <a href="{{ url_for('profile') }}" class="btn-link">Profile</a>
+          <a href="{{ url_for('logout') }}" class="btn-link">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn-link">Login</a>
+          <a href="{{ url_for('register') }}" class="btn-link">Register</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Page Content -->
+  <main class="background-overlay">
+    {% block content %}{% endblock %}
+  </main>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+  <footer>
+    <div class="footer-container">
+      <p>&copy; {{ current_year }} MyCareerMate. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('about') }}">About</a> |
+        <a href="{{ url_for('contact') }}">Contact</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>

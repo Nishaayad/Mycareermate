@@ -1,168 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-        url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+{% extends "base.html" %}
+{% block title %}Dashboard - MyCareerMate{% endblock %}
 
-    .dashboard-container {
-      background: rgba(19, 25, 62, 0.7);
-      padding: 40px 60px;
-      border-radius: 20px;
-      text-align: center;
-      width: 500px;
-      box-shadow: 0 0 30px rgba(246, 142, 251, 0.8);
-    }
+{% block content %}
+<style>
+  .dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
 
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 15px;
-      text-shadow: 0 0 10px #ffd700;
-    }
+  .dashboard-sidebar {
+    width: 320px;
+    background: rgba(24, 88, 61, 0.65);
+    border-radius: 20px;
+    padding: 30px 25px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+  }
 
-    p {
-      font-size: 1rem;
-      margin-bottom: 30px;
-      color: #ddd;
-    }
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #FFD700;
+    background: url('/static/images/boy.png') center/cover no-repeat;
+    margin: 0 auto 20px auto;
+  }
 
-    .btn {
-      display: inline-block;
-      margin: 15px 10px 0 10px;
-      padding: 12px 28px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #222;
-      background: #ffd700;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 0 15px #ffd700;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
+  .dashboard-sidebar h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+    font-weight: 700;
+  }
 
-    .btn:hover {
-      background: #e6c200;
-      color: #000;
-      box-shadow: 0 0 25px #e6c200;
-    }
+  .dashboard-sidebar a {
+    display: block;
+    margin: 10px 0;
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border: 2px solid #fff;
+  }
 
-    .logout-btn {
-      background: #ff4444;
-      color: white;
-    }
+  .dashboard-sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 
-    .logout-btn:hover {
-      background: #e03838;
-      box-shadow: 0 0 20px #ff4444;
-    }
-    .flash {
-      padding: 12px 20px;
-      margin: 15px auto;
-      border-radius: 10px;
-      max-width: 90%;
-      font-weight: bold;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-      animation: fadein 0.5s ease-in;
-    }
+  .btn-yellow {
+    background-color: #FFD700;
+    color: #000;
+    border: none;
+  }
 
-    .flash-success {
-      background-color: #d4edda;
-      color: #155724;
-    }
+  .btn-yellow:hover {
+    background-color: #FFC107;
+  }
 
-    .flash-warning {
-      background-color: #fff3cd;
-      color: #856404;
-    }
+  .btn-logout {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+  }
 
-    .flash-danger {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
+  .btn-logout:hover {
+    background-color: #e60000;
+  }
 
-    @keyframes fadein {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+  .entry-box {
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+  }
 
-    .career-list {
-      text-align: left;
-      margin-top: 20px;
-      padding-left: 0;
-      list-style: none;
-    }
+  .entry-box h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
 
-    .career-list li {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-    }
+  .entry-box p {
+    margin: 5px 0;
+    font-weight: 500;
+  }
 
-   .profile-pic {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #ffd700;
-  margin-bottom: 20px;
-}
+</style>
 
-  </style>
-</head>
-<body>
-  <div class="dashboard-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+<div class="dashboard-container">
+  <div class="dashboard-sidebar">
+    <div class="profile-pic"></div>
+    <h2>Welcome, {{ session['username'] }}!</h2>
 
-    <img src="{{ url_for('static', filename='css/images/' + user_pic) }}" class="profile-pic" />
-    <h1>Welcome, {{ session.get('user', 'Guest') }}!</h1>
+    <a href="{{ url_for('account') }}">My Account</a>
+    <a href="{{ url_for('profile') }}">My Profile</a>
+    <a href="{{ url_for('career_suggestion') }}" class="btn-yellow">Get Career Suggestions</a>
 
-    <a href="{{ url_for('update_profile') }}" class="btn">Edit Profile</a>
-    <a href="{{ url_for('career_suggestion') }}" class="btn">Get Career Suggestions</a>
-    <a href="{{ url_for('logout') }}" class="btn logout-btn">Logout</a>
-
-    <h2>Your Career Entries</h2>
-    <ul class="career-list">
-      {% if career_entries %}
-        {% for entry in career_entries %}
-          <li>
-            <strong>Interest:</strong> {{ entry['interest'] }}<br />
-            <strong>Skills:</strong> {{ entry['skills'] }}<br />
-            <strong>Goal:</strong> {{ entry['goal'] }}<br />
-            <strong>Role:</strong> {{ entry['role'] }}
-          </li>
+    <div class="entry-box">
+      <h4>Your Career Entries</h4>
+      {% if entries %}
+        {% for entry in entries %}
+          <p>{{ entry }}</p>
         {% endfor %}
       {% else %}
-        <li>No career entries found. Start by adding your goals!</li>
+        <p>No career entries found. Start by adding your goals!</p>
       {% endif %}
-    </ul>
+    </div>
+
+    <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}

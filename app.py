@@ -33,12 +33,25 @@ def allowed_file(filename):
 def home():
     return render_template('index.html')
 
+from flask import session, g
+
+@app.before_request
+def load_user():
+    g.user = session.get('user') 
+
+from flask import session, redirect, url_for
+
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
+    user = session.get('user') 
+    if not user:
+        session['guest'] = True
+
     suggestion = None
     if request.method == 'POST':
         prompt = request.form['prompt']
         suggestion = carrermate_aibot(prompt)
+    
     return render_template('chat.html', suggestion=suggestion)
 
 @app.route("/", methods=["GET", "POST"])
@@ -196,32 +209,43 @@ def dashboard():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    if 'user_id' not in session:
-        return redirect('/login')
+    if 'user' not in session:
+        flash("⚠️ Please login first.", "warning")
+        return redirect(url_for('login'))
+
+    username = session['user']
 
     if request.method == 'POST':
-        username = request.form['username']
         email = request.form['email']
         address = request.form['address']
         skills = request.form['skills']
 
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE profiles SET username=%s, email=%s, address=%s, skills=%s WHERE id=%s",
-                    (username, email, address, skills, session['user_id']))
+        cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
+        existing = cur.fetchone()
+
+        if existing:
+            cur.execute("""
+                UPDATE profiles SET email=%s, address=%s, skills=%s WHERE username=%s
+            """, (email, address, skills, username))
+        else:
+            cur.execute("""
+                INSERT INTO profiles (username, email, address, skills) 
+                VALUES (%s, %s, %s, %s)
+            """, (username, email, address, skills))
+
         mysql.connection.commit()
         cur.close()
+        flash("✅ Profile updated successfully!", "success")
+        return redirect(url_for('account'))
 
-        flash('✅ Profile updated successfully!', 'success')
-        return redirect('/profile')
-
+    # GET request – fetch existing data if available
     cur = mysql.connection.cursor()
-    cur.execute("SELECT username, email, address, skills FROM profiles WHERE id = %s", (session['user_id'],))
-    data = cur.fetchone()
+    cur.execute("SELECT email, address, skills FROM profiles WHERE username = %s", (username,))
+    profile_data = cur.fetchone()
     cur.close()
 
-    return render_template('profile.html', data=data)
-
-from MySQLdb.cursors import DictCursor
+    return render_template('profile.html', profile=profile_data)
 
 @app.route('/account')
 def account():
@@ -230,21 +254,17 @@ def account():
         return redirect(url_for('login'))
 
     username = session['user']
-    cur = mysql.connection.cursor(cursorclass=DictCursor)
+    cur = mysql.connection.cursor()
 
-    cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
+    cur.execute("SELECT email, address, skills FROM profiles WHERE username = %s", (username,))
     profile = cur.fetchone()
 
     cur.execute("SELECT profile_pic, role FROM users WHERE username = %s", (username,))
     user_info = cur.fetchone()
+
     cur.close()
 
-    if not profile:
-        flash("⚠️ Profile not found. Please create/update your profile first.", "danger")
-        return redirect(url_for('update_profile'))
-
     return render_template('account.html', profile=profile, user_info=user_info)
-
 
 @app.route('/career_suggestion', methods=['GET', 'POST'])
 def career_suggestion():
@@ -277,45 +297,6 @@ def career_suggestion():
         cur.close()
 
     return render_template('career_suggestion.html', suggestion=suggestion)
-
-@app.route('/update_profile', methods=['GET', 'POST'])
-def update_profile():
-    if 'user' not in session:
-        flash("⚠️ Please login first.", "warning")
-        return redirect(url_for('login'))
-
-    username = session['user']
-
-    if request.method == 'POST':
-        email = request.form['email']
-        address = request.form['address']
-        skills = request.form['skills']
-
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
-        existing_profile = cur.fetchone()
-
-        if existing_profile:
-            # Update existing profile
-            cur.execute("""
-                UPDATE profiles SET email=%s, address=%s, skills=%s 
-                WHERE username=%s
-            """, (email, address, skills, username))
-        else:
-            # Insert new profile
-            cur.execute("""
-                INSERT INTO profiles (username, email, address, skills)
-                VALUES (%s, %s, %s, %s)
-            """, (username, email, address, skills))
-
-        mysql.connection.commit()
-        cur.close()
-
-        flash("✅ Profile updated successfully!", "success")
-        return redirect(url_for('account'))
-
-    return render_template('update_profile.html')  # For GET requests
-
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -422,6 +403,30 @@ def show_data():
     data = cur.fetchall()
     cur.close()
     return render_template('show_data.html', data=data)
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in session:
+        flash("Please log in to delete your account.", "warning")
+        return redirect(url_for('login'))
+
+    cur = mysql.connection.cursor()
+    
+    try:
+        cur.execute("DELETE FROM users WHERE id = %s", (session['user_id'],))
+        mysql.connection.commit()
+
+        session.clear()
+        flash("Your account has been successfully deleted.", "success")
+        return redirect(url_for('signup'))
+
+    except Exception as e:
+        mysql.connection.rollback()
+        flash("Something went wrong while deleting the account. Please try again.", "danger")
+        return redirect(url_for('account'))
+
+    finally:
+        cur.close()
 
 @app.route('/logout')
 def logout():
