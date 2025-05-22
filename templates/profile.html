@@ -61,14 +61,14 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" value="{{ data[0] or '' }}" required>
+    <input type="email" name="email" placeholder="Email" value="{{ data[1] or '' }}" required>
+    <input type="text" name="address" placeholder="Address" value="{{ data[2] or '' }}">
+    <textarea name="skills" placeholder="Your Skills...">{{ data[3] or '' }}</textarea>
+    <button type="submit">Save Profile</button>
+</form>
 
-        <form method="POST">
-            <input type="text" name="username" placeholder="Username" value="{{ data[0] or '' }}" required>
-            <input type="email" name="email" placeholder="Email" value="{{ data[1] or '' }}" required>
-            <input type="text" name="address" placeholder="Address" value="{{ data[2] or '' }}">
-            <textarea name="skills" placeholder="Your Skills...">{{ data[3] or '' }}</textarea>
-            <button type="submit">Save Profile</button>
-        </form>
     </div>
 </body>
 </html>

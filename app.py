@@ -9,6 +9,7 @@ from bot import carrermate_aibot
 from functools import wraps
 from forms import ForgotPasswordForm 
 from MySQLdb.cursors import DictCursor
+from functools import wraps
 import os
 
 load_dotenv()
@@ -51,7 +52,7 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['fullname']
+        username = request.form['username']
         email = request.form['email']
         gender = request.form['gender']
         password = request.form['password']
@@ -62,7 +63,6 @@ def register():
             return redirect(url_for('register'))
 
         cur = mysql.connection.cursor()
-
         cur.execute("SELECT * FROM users WHERE email=%s", (email,))
         existing_user = cur.fetchone()
 
@@ -74,10 +74,9 @@ def register():
         hashed_password = generate_password_hash(password)
 
         cur.execute("""
-            INSERT INTO users (username, email, password, profile_pic)
-            VALUES (%s, %s, %s, %s)
-        """, (username, email, hashed_password, profile_pic))
-
+            INSERT INTO users (username, email, password, gender, profile_pic)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (username, email, hashed_password, gender, profile_pic))
         mysql.connection.commit()
         cur.close()
 
@@ -85,32 +84,35 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()  
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-    if form.validate_on_submit():  
-        email = form.email.data
-        password = form.password.data
+        if not username or not password:
+            flash("Please enter both username and password", "error")
+            return redirect(url_for('login'))
 
-        cur = mysql.connection.cursor(DictCursor)
-        cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = cur.fetchone()
         cur.close()
 
-        if user and check_password_hash(user['password'], password):
-            session['user_id'] = user['id']         
-            session['user'] = user['username']
-            session['email'] = user['email']
-            session['gender'] = user['gender']
-            session['profile_pic'] = user['profile_pic']
-            
-            flash(f'✅ Welcome back, {user["username"]}!', 'success')
+        if user and check_password_hash(user[3], password):
+            session['user_id'] = user[0]
+            session['user'] = user[1]
+            session['email'] = user[2]
+            session['gender'] = user[4]
+            session['profile_pic'] = user[5]
+            flash(f'✅ Welcome back, {user[1]}!', 'success')
             return redirect(url_for('dashboard'))
         else:
-            flash('❌ Invalid email or password', 'danger')
+            flash("Invalid username or password!", "error")
+            return redirect(url_for('login'))
 
-    return render_template('login.html', form=form)
+    return render_template('login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -141,10 +143,10 @@ def signup():
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user' not in session:   
-            flash('Please login first', 'error')
-            return redirect(url_for('login'))    
-        return f(*args, **kwargs)  
+        if 'user' not in session:
+            flash('Please login first', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
     return decorated_function
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -208,7 +210,8 @@ def profile():
                     (username, email, address, skills, session['user_id']))
         mysql.connection.commit()
         cur.close()
-        flash('Profile updated successfully!', 'success')
+
+        flash('✅ Profile updated successfully!', 'success')
         return redirect('/profile')
 
     cur = mysql.connection.cursor()
@@ -218,6 +221,7 @@ def profile():
 
     return render_template('profile.html', data=data)
 
+from MySQLdb.cursors import DictCursor
 
 @app.route('/account')
 def account():
@@ -226,7 +230,7 @@ def account():
         return redirect(url_for('login'))
 
     username = session['user']
-    cur = mysql.connection.cursor(DictCursor)
+    cur = mysql.connection.cursor(cursorclass=DictCursor)
 
     cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
     profile = cur.fetchone()
@@ -234,6 +238,10 @@ def account():
     cur.execute("SELECT profile_pic, role FROM users WHERE username = %s", (username,))
     user_info = cur.fetchone()
     cur.close()
+
+    if not profile:
+        flash("⚠️ Profile not found. Please create/update your profile first.", "danger")
+        return redirect(url_for('update_profile'))
 
     return render_template('account.html', profile=profile, user_info=user_info)
 
@@ -272,44 +280,42 @@ def career_suggestion():
 
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update_profile():
-    if 'email' not in session:
-        flash('Please login to update your profile.', 'warning')
+    if 'user' not in session:
+        flash("⚠️ Please login first.", "warning")
         return redirect(url_for('login'))
-    
-    email = session['email']
-    cur = mysql.connection.cursor(DictCursor)
+
+    username = session['user']
 
     if request.method == 'POST':
-        name = request.form.get('name')
-        phone = request.form.get('phone')
-        address = request.form.get('address')
-        skills = request.form.get('skills')
+        email = request.form['email']
+        address = request.form['address']
+        skills = request.form['skills']
 
-        cur.execute("SELECT * FROM profiles WHERE email = %s", (email,))
-        profile = cur.fetchone()
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM profiles WHERE username = %s", (username,))
+        existing_profile = cur.fetchone()
 
-        if profile:
+        if existing_profile:
+            # Update existing profile
             cur.execute("""
-                UPDATE profiles SET name=%s, phone=%s, address=%s, skills=%s WHERE email=%s
-            """, (name, phone, address, skills, email))
+                UPDATE profiles SET email=%s, address=%s, skills=%s 
+                WHERE username=%s
+            """, (email, address, skills, username))
         else:
+            # Insert new profile
             cur.execute("""
-                INSERT INTO profiles (email, name, phone, address, skills) VALUES (%s, %s, %s, %s, %s)
-            """, (email, name, phone, address, skills))
-        
+                INSERT INTO profiles (username, email, address, skills)
+                VALUES (%s, %s, %s, %s)
+            """, (username, email, address, skills))
+
         mysql.connection.commit()
         cur.close()
-        
-        flash("Profile updated successfully!", "success")
-    
-        return redirect(url_for('update_profile'))
 
-    else:
-        cur.execute("SELECT * FROM profiles WHERE email = %s", (email,))
-        profile = cur.fetchone()
-        cur.close()
+        flash("✅ Profile updated successfully!", "success")
+        return redirect(url_for('account'))
 
-        return render_template('update_profile.html', user=profile)
+    return render_template('update_profile.html')  # For GET requests
+
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():

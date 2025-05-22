@@ -5,136 +5,71 @@
 {% block content %}
 <style>
   body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
     background: 
-      linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+      linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
       url("{{ url_for('static', filename='images/1.jpg') }}") no-repeat center center fixed;
     background-size: cover;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
   }
 
-  header {
-    background-color: #27ae60; /* dark green */
-    padding: 15px 30px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 100;
-  }
-
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .logo a {
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
-  .nav-links a {
-    color: white;
-    margin-left: 20px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 8px 18px;
-    border-radius: 25px;
-    transition: background-color 0.3s ease;
-  }
-
-  .nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-  }
-
-  .register-container {
-    background: rgba(255, 255, 255, 0.15);
+ .register-container {
+    max-width: 400px;
+    margin: 80px auto;
     padding: 40px 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(8.5px);
-    -webkit-backdrop-filter: blur(8.5px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    width: 350px;
-    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
     color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
-
   .register-container h2 {
+    text-align: center;
     margin-bottom: 25px;
+    font-weight: 600;
   }
 
-  form {
+   form {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 15px;
   }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  select {
-    padding: 12px 15px;
+  input, select {
+    padding: 12px;
     border-radius: 25px;
     border: none;
-    outline: none;
     font-size: 1rem;
     background: rgba(255, 255, 255, 0.25);
-    color: white;
-    transition: background-color 0.3s ease;
+    color: rgb(31, 28, 28);
+    outline: none;
   }
-
+  
   input::placeholder,
   select {
-    color: white;
-    opacity: 0.8;
+    color: rgb(255, 255, 255);
   }
-
-  input:focus,
-  select:focus {
-    background: rgba(255, 255, 255, 0.4);
+  select option {
+  background-color: rgb(255, 255, 255);
+  color: rgb(24, 24, 24);
   }
-
-  button {
-    padding: 12px 0;
-    border: none;
-    border-radius: 25px;
+    button {
+    padding: 12px;
     background-color: #27ae60;
     color: white;
-    font-weight: 700;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 1.1rem;
   }
 
   button:hover {
     background-color: #1e8449;
   }
 </style>
-
-<header>
-  <div class="navbar">
-    <div class="logo">
-      <a href="{{ url_for('home') }}">MyCareerMate</a>
-    </div>
-    <div class="nav-links">
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('register') }}">Register</a>
-    </div>
-  </div>
-</header>
 
 <div class="register-container">
   <h2>Create an Account</h2>
