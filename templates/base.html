@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}MyCareerMate{% endblock %}</title>
-  
-  <!-- External CSS -->
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
@@ -115,8 +114,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div class="flash-container">
@@ -127,7 +124,6 @@
     {% endif %}
   {% endwith %}
 
-  <!-- Header -->
   <header>
     <nav class="navbar">
       <div class="logo">
