@@ -12,10 +12,15 @@ chat_model = ChatNVIDIA(
 )
 
 def carrermate_aibot(query):
-    prompt = f"""
-You are an AI career guide. Based on the user's query below, give a short and helpful career suggestion with 2–3 job roles and 2 skills to focus on:
+    prompt =   prompt = f"""
+You are a friendly and helpful AI career mentor. Based on the user's question below, give a simple and clear answer in a human tone.
 
-User query: {query}
+1. Start with a warm sentence that makes the user feel supported.
+2. Suggest 2–3 career paths that match their interest.
+3. Mention 2 easy-to-start skills or tools to focus on.
+4. Keep the language short, positive, and beginner-friendly.
+
+User: {query}
 """
 
     try:
