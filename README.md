@@ -19,4 +19,3 @@ Welcome to *MyCareerMate*, an AI-powered web application designed to guide stude
 
 ---
 
-## 📁 Project Structure
