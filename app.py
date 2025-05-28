@@ -239,7 +239,6 @@ def profile():
         flash("✅ Profile updated successfully!", "success")
         return redirect(url_for('account'))
 
-    # GET request – fetch existing data if available
     cur = mysql.connection.cursor()
     cur.execute("SELECT email, address, skills FROM profiles WHERE username = %s", (username,))
     profile_data = cur.fetchone()
@@ -354,12 +353,12 @@ def upload_picture():
     if request.method == 'POST':
         file = request.files['profile_pic']  
 
-        if file and allowed_file(file.filename):  # Check file type
+        if file and allowed_file(file.filename):  
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)  # Save file to folder
+            file.save(filepath) 
 
-            # Update DB with new filename
+            
             cur = mysql.connection.cursor()
             cur.execute("UPDATE users SET profile_pic=%s WHERE username=%s", (filename, session['user']))
             mysql.connection.commit()
@@ -430,7 +429,7 @@ def delete_account():
 
 @app.route('/logout')
 def logout():
-    session.clear()  # Clear user session
+    session.clear()  
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('login'))  
 
